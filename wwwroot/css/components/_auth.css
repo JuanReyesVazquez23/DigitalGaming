@@ -1,0 +1,19 @@
+/* Layer: components/auth — modal de sesión compacto. */
+.modal-narrow { width: min(400px, 100%); }
+.tabs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  background: #0e0e11; border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm); padding: 5px;
+}
+.tab {
+  border: none; background: transparent; color: var(--text-2);
+  border-radius: 7px; padding: 8px; cursor: pointer;
+  font-weight: 700; font-size: 0.83rem;
+}
+.tab.active { background: var(--bg-2); color: #fff; }
+.auth-notice {
+  font-size: 0.82rem; color: #ffd9a8;
+  background: rgba(255, 110, 60, 0.08); border: 1px solid #5c2f1a;
+  border-radius: var(--radius-sm); padding: 8px 11px;
+}
+.auth-notice:empty { display: none; }

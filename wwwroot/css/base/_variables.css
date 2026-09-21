@@ -1,0 +1,22 @@
+/* Layer: base/variables — tokens. Tema maduro rojo/negro, tipografía Inter + Sora. */
+:root {
+  --bg-0: #0b0b0d;
+  --bg-1: #131316;
+  --bg-2: #1b1b1f;
+  --bg-card: #151518;
+  --line: #26262c;
+  --line-soft: #1e1e23;
+  --red-500: #d8232a;
+  --red-600: #a8151b;
+  --red-ink: #ff6b6f;
+  --red-glow: rgba(216, 35, 42, 0.22);
+  --text-0: #f2f2f3;
+  --text-1: #c6c6cc;
+  --text-2: #94949d;
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display: "Sora", "Inter", system-ui, -apple-system, sans-serif;
+}

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es-DO">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="DigitalMarket — tienda gamer en República Dominicana. Consolas, videojuegos, PC y accesorios con precios en RD$ y envío a todo el país." />
+  <title>DigitalMarket — Tienda Gamer en RD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/main.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">DM</div>
+        <div class="brand-text">
+          <!-- 10 toques aquí para abrir modo admin -->
+          <h1 id="brandTitle" class="brand-title" title="DigitalMarket">DIGITAL<span class="accent">MARKET</span></h1>
+          <p class="brand-sub">Santo Domingo · Envíos a todo el país</p>
+          <div id="tapHint" class="tap-hint" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="search">
+          <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="searchInput" type="search" placeholder="Buscar en la tienda..." aria-label="Buscar productos" />
+        </div>
+        <div class="session-area">
+          <button id="cartBtn" class="btn btn-ghost btn-icon cart-btn" aria-label="Abrir carrito">🛒<span id="cartCount" class="cart-badge" hidden>0</span></button>
+          <button id="loginBtn" class="btn btn-ghost btn-sm">Entrar</button>
+          <div id="userChip" class="user-chip" hidden>
+            <span class="user-name" title="Sesión iniciada">👤 <strong id="userName"></strong></span>
+            <button id="logoutBtn" class="btn btn-ghost btn-sm">Salir</button>
+          </div>
+        </div>
+        <!-- Barra admin: solo visible en modo admin, es la SALIDA clara -->
+        <div id="adminBar" class="admin-bar" hidden>
+          <span class="admin-pill"><span class="dot"></span>ADMIN</span>
+          <button id="newProductBtn" class="btn btn-primary btn-sm">+ Nuevo</button>
+          <button id="exitAdminBtn" class="btn btn-ghost btn-sm">Salir</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Tienda gamer en RD · 2026</p>
+        <h2>Equipa tu setup, <span>sin dar vueltas.</span></h2>
+        <p class="lede">Consolas, juegos, PC y monitores con precios claros en RD$. Compra en Santo Domingo con envío a Santiago, La Vega y el resto del país.</p>
+        <div class="hero-stats">
+          <div><strong id="statTotal">—</strong><span>productos</span></div>
+          <div><strong>5</strong><span>categorías</span></div>
+          <div><strong>24/48h</strong><span>envío RD</span></div>
+        </div>
+      </div>
+      <div class="hero-card" aria-hidden="true">
+        <div class="hero-card-top"><span></span><span></span><span></span></div>
+        <p class="hero-card-title">Nebula X · 1TB</p>
+        <p class="hero-card-price">RD$74,995 <em>stock: 8</em></p>
+        <div class="hero-card-bar"><i style="width:72%"></i></div>
+      </div>
+    </section>
+
+    <!-- Anuncio: reserva GTA VI -->
+    <section class="gta-banner" aria-label="Reserva Grand Theft Auto VI">
+      <div class="gta-media">
+        <!-- Arte oficial de Rockstar Games (portada GTA VI), guardado local con fines ilustrativos del MVP. -->
+        <img src="./assets/gta6.jpg" alt="Portada oficial de Grand Theft Auto VI con Lucía y Jason" loading="lazy" referrerpolicy="no-referrer" />
+      </div>
+      <div class="gta-copy">
+        <span class="gta-pill"><span class="dot"></span>Pre-venta · Solo en RD</span>
+        <h2>Reserva el <span>GTA VI</span></h2>
+        <p class="gta-lede">No te quedes sin <strong>el juego más esperado de la historia</strong>. Aparta tu copia hoy y recíbela el día del lanzamiento, con envío a todo el país.</p>
+        <p class="gta-price"><strong>RD$4,950</strong><span>apartado · PS5 y Xbox Series</span></p>
+        <div class="gta-actions">
+          <button id="gtaReserveBtn" class="btn btn-primary">Reservar el mío</button>
+          <a href="#grid" class="btn btn-ghost" style="text-decoration:none; display:inline-block">Ver en catálogo</a>
+        </div>
+        <p class="gta-note">Cupos limitados por tienda. El apartado se descuenta del precio final.</p>
+        <p class="gta-credit">Arte oficial © Rockstar Games · Imagen con fines ilustrativos.</p>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <div id="filters" class="filters" role="tablist" aria-label="Categorías">
+        <button class="chip active" data-cat="all">Todo</button>
+        <button class="chip" data-cat="Consolas">Consolas</button>
+        <button class="chip" data-cat="Videojuegos">Videojuegos</button>
+        <button class="chip" data-cat="Accesorios">Accesorios</button>
+        <button class="chip" data-cat="PC">PC</button>
+        <button class="chip" data-cat="Monitores">Monitores</button>
+      </div>
+      <span id="countLabel" class="muted"></span>
+    </div>
+
+    <section id="grid" class="grid" aria-live="polite"></section>
+    <div id="emptyState" class="empty" style="display:none">No encontramos eso por aquí. Prueba con otra búsqueda o categoría.</div>
+
+    <!-- Panel admin (oculto hasta desbloqueo con 10 toques) -->
+    <section id="adminPanel" class="admin-panel" style="display:none" aria-label="Panel de administración">
+      <div class="admin-head">
+        <div>
+          <p class="eyebrow eyebrow-red">Modo administración</p>
+          <h2>Gestión de catálogo</h2>
+          <p class="muted">Crea y edita fichas con nombre, precio en RD$, imagen y stock. Se guarda en la API y en caché local como respaldo.</p>
+        </div>
+        <div class="admin-head-actions">
+          <button id="newProductBtn2" class="btn btn-primary btn-sm">+ Nuevo producto</button>
+          <button id="lockAdminBtn" class="btn btn-ghost btn-sm">Salir del modo admin</button>
+        </div>
+      </div>
+      <div id="adminList" class="admin-list"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>DigitalMarket · Santo Domingo, RD</span>
+    <span class="footer-sep">—</span>
+    <span>Precios en RD$ · Envíos a todo el país</span>
+  </footer>
+
+  <!-- Modal crear/editar producto: compacto + responsive con scroll interno -->
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <div>
+          <p id="modalEyebrow" class="eyebrow eyebrow-red">Admin · Alta</p>
+          <h2 id="modalTitle">Nuevo producto</h2>
+        </div>
+        <button id="closeModalBtn" class="btn btn-ghost btn-icon" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-section">
+          <h3>1 · Información</h3>
+          <div class="field">
+            <label for="fName">Nombre *</label>
+            <input id="fName" maxlength="80" placeholder="Ej. Consola Nebula X 1TB" autocomplete="off" />
+          </div>
+          <div class="form-grid-3">
+            <div class="field">
+              <label for="fPrice">Precio (RD$) *</label>
+              <input id="fPrice" type="number" min="1" step="1" placeholder="74995" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label for="fStock">Stock</label>
+              <input id="fStock" type="number" min="0" step="1" value="1" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label for="fCategory">Categoría *</label>
+              <select id="fCategory">
+                <option>Consolas</option>
+                <option>Videojuegos</option>
+                <option>Accesorios</option>
+                <option>PC</option>
+                <option>Monitores</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="fDesc">Descripción</label>
+            <textarea id="fDesc" rows="2" maxlength="500" placeholder="Detalles, garantía, entrega en RD..."></textarea>
+          </div>
+        </div>
+        <div class="form-section">
+          <h3>2 · Imagen</h3>
+          <div class="form-grid-2">
+            <div>
+              <div class="field">
+                <label for="fImageUrl">URL de la imagen</label>
+                <input id="fImageUrl" placeholder="https://ejemplo.com/foto.jpg" inputmode="url" autocomplete="off" />
+                <p class="img-hint">Pega el link <strong>directo</strong> de la imagen (termina en .jpg, .png o .webp). Si escribes aquí, se usa esta URL aunque antes hayas subido un archivo.</p>
+              </div>
+              <div class="field">
+                <label for="fImageFile">O sube un archivo</label>
+                <input id="fImageFile" type="file" accept="image/*" />
+              </div>
+              <p id="imgStatus" class="img-status" role="status" aria-live="polite"></p>
+            </div>
+            <img id="fPreview" class="preview" alt="Vista previa del producto" referrerpolicy="no-referrer" />
+          </div>
+        </div>
+        <div id="formError" class="form-error" role="alert"></div>
+      </div>
+      <div class="modal-foot">
+        <span class="foot-hint">Esc para cerrar</span>
+        <div class="foot-actions">
+          <button id="cancelModalBtn" class="btn btn-ghost">Cancelar</button>
+          <button id="saveProductBtn" class="btn btn-primary">Guardar producto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+
+  <!-- Modal sesión: entrar o crear cuenta (para comprar) -->
+  <div id="authBackdrop" class="modal-backdrop">
+    <div class="modal modal-narrow" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow eyebrow-red">Cuenta</p>
+          <h2 id="authTitle">Entrar</h2>
+        </div>
+        <button id="closeAuthBtn" class="btn btn-ghost btn-icon" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs" role="tablist" aria-label="Modo de sesión">
+          <button id="tabLogin" class="tab active" role="tab">Entrar</button>
+          <button id="tabRegister" class="tab" role="tab">Crear cuenta</button>
+        </div>
+        <div id="authNotice" class="auth-notice" role="status"></div>
+        <div class="field">
+          <label for="aUser">Nombre *</label>
+          <input id="aUser" maxlength="40" placeholder="Tu nombre de usuario" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label for="aPass">Contraseña *</label>
+          <input id="aPass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="current-password" />
+        </div>
+        <div id="authError" class="form-error" role="alert"></div>
+      </div>
+      <div class="modal-foot">
+        <span class="foot-hint">Sesión con JWT</span>
+        <div class="foot-actions">
+          <button id="cancelAuthBtn" class="btn btn-ghost">Cancelar</button>
+          <button id="authSubmitBtn" class="btn btn-primary">Entrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carrito lateral -->
+  <div id="cartBackdrop" class="drawer-backdrop"></div>
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Carrito de compras">
+    <div class="cart-head">
+      <div>
+        <p class="eyebrow eyebrow-red">Tu compra</p>
+        <h2>Carrito</h2>
+      </div>
+      <button id="closeCartBtn" class="btn btn-ghost btn-icon" aria-label="Cerrar carrito">✕</button>
+    </div>
+    <div class="cart-body">
+      <div id="cartEmpty" class="empty">Tu carrito está vacío. Agrega algo del catálogo.</div>
+      <div id="cartItems" class="cart-items"></div>
+      <div id="cartError" class="form-error" role="alert"></div>
+    </div>
+    <div class="cart-foot">
+      <div class="cart-total"><span>Total</span><strong id="cartTotal">RD$0</strong></div>
+      <button id="checkoutBtn" class="btn btn-primary" style="width:100%">Comprar ahora</button>
+      <p class="cart-hint">Para comprar necesitas iniciar sesión.</p>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+/* Layer: components/buttons — sobrios, poco glow. */
+.btn {
+  border: 1px solid var(--line); background: var(--bg-2); color: var(--text-0);
+  border-radius: var(--radius-sm); padding: 9px 14px; cursor: pointer;
+  font-weight: 600; font-size: 0.87rem; transition: border-color 0.15s, filter 0.15s, background 0.15s;
+}
+.btn:hover { border-color: #3d3d45; }
+.btn-sm { padding: 7px 12px; font-size: 0.8rem; border-radius: 999px; }
+.btn-icon { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; border-radius: 50%; }
+.btn-primary {
+  background: linear-gradient(180deg, var(--red-500), var(--red-600));
+  border-color: #7c1013; color: #fff;
+}
+.btn-primary:hover { filter: brightness(1.07); border-color: #7c1013; }
+.btn-ghost { background: transparent; color: var(--text-1); }
+.btn-ghost:hover { color: #fff; background: #1e1e23; }
+.btn-danger { background: rgba(216,35,42,0.1); border-color: #4a1d1f; color: #ff9d97; }
+.btn-danger:hover { background: rgba(216,35,42,0.18); }
+.btn-secondary { background: #1e1e23; border-color: #34343c; color: var(--text-0); }
+.btn-secondary:hover { border-color: var(--red-600); }
+.btn:disabled { opacity: 0.6; cursor: wait; }
+.chip {
+  border: 1px solid var(--line); background: var(--bg-1); color: var(--text-1);
+  padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: 0.82rem; font-weight: 600;
+}
+.chip:hover { color: #fff; border-color: #3d3d45; }
+.chip.active { background: var(--text-0); border-color: var(--text-0); color: #111; }

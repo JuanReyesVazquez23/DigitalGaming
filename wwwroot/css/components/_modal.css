@@ -1,0 +1,54 @@
+/* Layer: components/modal — compacto, con scroll interno; nunca excede la pantalla. */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(5, 5, 7, 0.72);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center; padding: 16px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  width: min(620px, 100%);
+  max-height: min(88vh, 780px);
+  display: flex; flex-direction: column;
+  background: var(--bg-1); border: 1px solid var(--line);
+  border-radius: 16px; box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: modal-in 0.18s ease;
+}
+@keyframes modal-in { from { transform: translateY(8px); opacity: 0; } }
+.modal-head {
+  padding: 16px 18px 14px; border-bottom: 1px solid var(--line-soft);
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex: none;
+  background: #141417;
+}
+.modal-head h2 { font-size: 1.15rem; margin-top: 2px; }
+.modal-body {
+  padding: 16px 18px;
+  overflow-y: auto; overscroll-behavior: contain;
+  display: grid; gap: 16px; align-content: start;
+}
+.modal-foot {
+  padding: 12px 18px; border-top: 1px solid var(--line-soft); flex: none;
+  display: flex; gap: 10px; justify-content: space-between; align-items: center;
+  background: #141417;
+}
+.foot-hint { font-size: 0.72rem; color: var(--text-2); }
+.foot-actions { display: flex; gap: 8px; }
+
+/* Móvil: sheet inferior, aprovecha el alto */
+@media (max-width: 640px) {
+  .modal-backdrop { padding: 0; align-items: flex-end; }
+  .modal {
+    width: 100%; max-height: 92vh;
+    border-radius: 18px 18px 0 0; border-left: none; border-right: none; border-bottom: none;
+  }
+  .modal-foot { flex-direction: column; align-items: stretch; }
+  .foot-hint { display: none; }
+  .foot-actions { display: grid; grid-template-columns: 1fr 1fr; }
+}
+
+/* Pantallas bajas (landscape): aún más compacto */
+@media (max-height: 600px) {
+  .modal { max-height: 94vh; }
+  .modal-body { padding: 12px 16px; gap: 12px; }
+}

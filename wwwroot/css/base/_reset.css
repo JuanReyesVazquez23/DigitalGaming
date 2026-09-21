@@ -1,0 +1,14 @@
+/* Layer: base/reset */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+html, body { height: 100%; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-0); color: var(--text-0);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+body.modal-open { overflow: hidden; }
+img { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+::selection { background: var(--red-500); color: #fff; }

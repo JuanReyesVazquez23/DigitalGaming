@@ -1,0 +1,8 @@
+/* Layer: layout/footer */
+.footer {
+  border-top: 1px solid var(--line-soft); padding: 20px;
+  color: var(--text-2); font-size: 0.82rem;
+  background: #0c0c0e;
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+}
+.footer-sep { opacity: 0.5; }

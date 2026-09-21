@@ -1,0 +1,29 @@
+// Layer: ts/domain — entidades puras, sin dependencias.
+export type Category = "Consolas" | "Videojuegos" | "Accesorios" | "PC" | "Monitores";
+
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  /** Categoría del catálogo (string para interoperar con C# enum serializado). */
+  category: Category | string;
+  imageUrl: string;
+  description: string;
+  stock: number;
+}
+
+export interface CreateProductDto {
+  name: string;
+  price: number;
+  category: Category;
+  imageUrl: string;
+  description: string;
+  stock: number;
+}
+
+export const CATEGORIES: Category[] = ["Consolas", "Videojuegos", "Accesorios", "PC", "Monitores"];
+
+export function formatPrice(n: number): string {
+  // Tienda dominicana: pesos dominicanos, locale es-DO.
+  return new Intl.NumberFormat("es-DO", { style: "currency", currency: "DOP", maximumFractionDigits: 0 }).format(n);
+}

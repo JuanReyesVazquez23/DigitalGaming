@@ -1,0 +1,16 @@
+/* Layer: base/typography — Sora para titulares, Inter para cuerpo. */
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; line-height: 1.2; font-weight: 700; }
+.brand-title {
+  font-size: 1.25rem; font-weight: 800; letter-spacing: 0.04em;
+  cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.brand-title .accent { color: var(--red-500); }
+.brand-sub { font-size: 0.75rem; color: var(--text-2); letter-spacing: 0.02em; margin-top: 1px; }
+.eyebrow {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-2);
+}
+.eyebrow-red { color: var(--red-ink); }
+.lede { color: var(--text-1); font-size: 0.98rem; max-width: 52ch; }
+.price { color: #fff; font-weight: 700; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.muted { color: var(--text-2); font-size: 0.88rem; }

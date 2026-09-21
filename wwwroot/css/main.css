@@ -1,0 +1,26 @@
+/* Arquitectura CSS por capas (ITCSS + @layer nativo).
+   Orden: base -> layout -> components -> pages -> themes
+*/
+@layer base, layout, components, pages, themes;
+
+@import url("./base/_variables.css") layer(base);
+@import url("./base/_reset.css") layer(base);
+@import url("./base/_typography.css") layer(base);
+
+@import url("./layout/_header.css") layer(layout);
+@import url("./layout/_grid.css") layer(layout);
+@import url("./layout/_footer.css") layer(layout);
+
+@import url("./components/_card.css") layer(components);
+@import url("./components/_buttons.css") layer(components);
+@import url("./components/_badges.css") layer(components);
+@import url("./components/_modal.css") layer(components);
+@import url("./components/_forms.css") layer(components);
+@import url("./components/_auth.css") layer(components);
+
+@import url("./pages/_store.css") layer(pages);
+@import url("./pages/_gta-banner.css") layer(pages);
+@import url("./pages/_cart.css") layer(pages);
+@import url("./pages/_admin.css") layer(pages);
+
+@import url("./themes/_dark-red.css") layer(themes);

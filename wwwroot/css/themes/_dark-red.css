@@ -1,0 +1,6 @@
+/* Layer: themes/dark-red — ajustes finos del tema */
+::selection { background: var(--red-500); color: #fff; }
+a { color: #ff7a73; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--red-600); }
