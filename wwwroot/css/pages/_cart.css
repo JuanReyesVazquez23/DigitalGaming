@@ -70,6 +70,23 @@
 }
 .toast[hidden] { display: none; }
 
+/* Historial de compras */
+.orders-list { display: grid; gap: 10px; }
+.order {
+  border: 1px solid var(--line-soft); border-radius: 12px;
+  background: #101013; padding: 11px 13px; display: grid; gap: 6px;
+}
+.order-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.order-head strong { font-size: 0.84rem; }
+.order-date { font-size: 0.72rem; color: var(--text-2); }
+.order-items { font-size: 0.8rem; color: var(--text-1); display: grid; gap: 2px; }
+.order-total {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-top: 1px solid var(--line-soft); padding-top: 7px; margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.order-total strong { font-family: var(--font-display); }
+
 @media (max-width: 760px) {
   .session-area { margin-left: auto; }
   .user-name { max-width: 90px; }

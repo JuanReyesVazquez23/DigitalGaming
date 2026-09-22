@@ -1,11 +1,13 @@
 // Compilado desde ts/app.ts
 import { fetchProducts } from "./data/product-repository.js";
 import { filterProducts } from "./services/product-service.js";
-import { addToCart } from "./services/cart-store.js";
+import { addToCart, getCart } from "./services/cart-store.js";
+import { getSession } from "./services/session-store.js";
 import { renderStore } from "./ui/store-renderer.js";
 import { setupAdmin } from "./ui/admin-controller.js";
 import { setupAuth } from "./ui/auth-controller.js";
 import { setupCart, toast } from "./ui/cart-drawer.js";
+import { setupOrders } from "./ui/orders-controller.js";
 import { setupTapUnlock } from "./ui/tap-unlock.js";
 const grid = el("grid");
 const empty = el("emptyState");
@@ -18,10 +20,21 @@ const tapHint = el("tapHint");
 const adminPanel = el("adminPanel");
 let all = [];
 let activeCat = "all";
-const auth = setupAuth({ onSessionChanged: () => { cart.renderCart(); void reload(); } });
+const auth = setupAuth({ onSessionChanged: () => {
+  cart.renderCart(); void reload();
+  if (getSession()) {
+    if (getCart().length > 0) cart.openCart();
+  } else {
+    admin.lock();
+  }
+} });
 const cart = setupCart({
   getCatalog: () => all,
   onCheckoutDone: reload,
+  requireAuth: (notice) => auth.openAuth("login", notice),
+  onCartChanged: paint,
+});
+setupOrders({
   requireAuth: (notice) => auth.openAuth("login", notice),
 });
 const admin = setupAdmin({ onChanged: reload, onLock: () => tapLock.lock() });
@@ -54,12 +67,14 @@ async function reload() {
 }
 function paint() {
   const items = filterProducts(all, activeCat, search.value);
+  const reserved = new Map(getCart().map((l) => [l.id, l.qty]));
   renderStore(grid, empty, count, items, (id) => {
     addToCart(id);
     cart.renderCart();
+    paint();
     const p = all.find((x) => x.id === id);
     toast(p ? `Agregado: ${p.name} 🛒` : "Agregado al carrito 🛒");
-  });
+  }, (id) => reserved.get(id) ?? 0);
   if (statTotal) statTotal.textContent = String(all.length);
 }
 function el(id) { const node = document.getElementById(id); if (!node) throw new Error(`Falta #${id}`); return node; }

@@ -8,6 +8,8 @@ interface CartDeps {
   getCatalog: () => Product[];
   onCheckoutDone: () => Promise<void>;
   requireAuth: (notice: string) => void;
+  /** Repinta la tienda (stock en vivo) cuando cambia el carrito. */
+  onCartChanged: () => void;
 }
 
 export function setupCart(deps: CartDeps): {
@@ -71,14 +73,22 @@ export function setupCart(deps: CartDeps): {
       (row.querySelector('[data-act="dec"]') as HTMLButtonElement).addEventListener("click", () => {
         setQty(line.id, line.qty - 1);
         renderCart();
+        deps.onCartChanged();
       });
       (row.querySelector('[data-act="inc"]') as HTMLButtonElement).addEventListener("click", () => {
+        // Tope: no apartar más de lo que hay en stock.
+        if (line.qty + 1 > p.stock) {
+          toast(`Solo quedan ${p.stock} de "${p.name}".`);
+          return;
+        }
         setQty(line.id, line.qty + 1);
         renderCart();
+        deps.onCartChanged();
       });
       (row.querySelector(".cart-remove") as HTMLButtonElement).addEventListener("click", () => {
         removeFromCart(line.id);
         renderCart();
+        deps.onCartChanged();
       });
       itemsEl.appendChild(row);
     }
@@ -119,6 +129,9 @@ export function setupCart(deps: CartDeps): {
   getEl("cartBtn").addEventListener("click", openCart);
   getEl("closeCartBtn").addEventListener("click", closeCart);
   backdrop.addEventListener("click", closeCart);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && drawer.classList.contains("open")) closeCart();
+  });
   checkoutBtn.addEventListener("click", () => void doCheckout());
 
   updateBadge();

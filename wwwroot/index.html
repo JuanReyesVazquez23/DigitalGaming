@@ -8,13 +8,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/main.css?v=4" />
+  <link rel="icon" href="./assets/brand/favicon.svg" type="image/svg+xml" />
+  <link rel="alternate icon" href="./assets/brand/favicon.ico" />
+  <link rel="icon" href="./assets/brand/favicon-32x32.png" sizes="32x32" type="image/png" />
+  <link rel="icon" href="./assets/brand/favicon-16x16.png" sizes="16x16" type="image/png" />
+  <link rel="apple-touch-icon" href="./assets/brand/apple-touch-icon.png" />
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand">
-        <div class="brand-logo" aria-hidden="true">DM</div>
+        <div class="brand-logo" aria-hidden="true"><img src="./assets/brand/favicon.svg" alt="" width="38" height="38" /></div>
         <div class="brand-text">
           <!-- 10 toques aquí para abrir modo admin -->
           <h1 id="brandTitle" class="brand-title" title="DigitalMarket">DIGITAL<span class="accent">MARKET</span></h1>
@@ -28,6 +33,7 @@
           <input id="searchInput" type="search" placeholder="Buscar en la tienda..." aria-label="Buscar productos" />
         </div>
         <div class="session-area">
+          <button id="ordersBtn" class="btn btn-ghost btn-icon" aria-label="Ver mis compras" title="Mis compras">📦</button>
           <button id="cartBtn" class="btn btn-ghost btn-icon cart-btn" aria-label="Abrir carrito">🛒<span id="cartCount" class="cart-badge" hidden>0</span></button>
           <button id="loginBtn" class="btn btn-ghost btn-sm">Entrar</button>
           <div id="userChip" class="user-chip" hidden>
@@ -56,12 +62,6 @@
           <div><strong>5</strong><span>categorías</span></div>
           <div><strong>24/48h</strong><span>envío RD</span></div>
         </div>
-      </div>
-      <div class="hero-card" aria-hidden="true">
-        <div class="hero-card-top"><span></span><span></span><span></span></div>
-        <p class="hero-card-title">Nebula X · 1TB</p>
-        <p class="hero-card-price">RD$74,995 <em>stock: 8</em></p>
-        <div class="hero-card-bar"><i style="width:72%"></i></div>
       </div>
     </section>
 
@@ -138,7 +138,7 @@
           <h3>1 · Información</h3>
           <div class="field">
             <label for="fName">Nombre *</label>
-            <input id="fName" maxlength="80" placeholder="Ej. Consola Nebula X 1TB" autocomplete="off" />
+            <input id="fName" maxlength="80" placeholder="Ej. Control Pro Inalámbrico" autocomplete="off" />
           </div>
           <div class="form-grid-3">
             <div class="field">
@@ -195,7 +195,7 @@
     </div>
   </div>
 
-  <script type="module" src="./js/app.js"></script>
+  <script type="module" src="./js/app.js?v=4"></script>
 
   <!-- Modal sesión: entrar o crear cuenta (para comprar) -->
   <div id="authBackdrop" class="modal-backdrop">
@@ -256,5 +256,23 @@
   </aside>
 
   <div id="toast" class="toast" role="status" hidden></div>
+
+  <!-- Modal historial de compras -->
+  <div id="ordersBackdrop" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ordersTitle">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow eyebrow-red">Cuenta</p>
+          <h2 id="ordersTitle">Mis compras</h2>
+        </div>
+        <button id="closeOrdersBtn" class="btn btn-ghost btn-icon" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="ordersEmpty" class="empty">Aún no tienes compras. Lo que compres aparecerá aquí.</div>
+        <div id="ordersList" class="orders-list"></div>
+        <div id="ordersError" class="form-error" role="alert"></div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

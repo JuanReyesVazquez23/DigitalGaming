@@ -30,25 +30,31 @@ public sealed class OrderService(IOrderRepository orders, IProductRepository pro
         }
 
         var lines = new List<OrderItem>();
-        foreach (var item in items)
+        // Why se agrupa por producto: dos líneas del mismo producto no deben
+        // validar stock cada una por separado (vendía de más).
+        var grouped = items
+            .GroupBy(i => i.ProductId)
+            .Select(g => (ProductId: g.Key, Quantity: g.Sum(i => i.Quantity)))
+            .ToList();
+        foreach (var (productId, quantity) in grouped)
         {
-            if (item.Quantity < 1 || item.Quantity > 99)
+            if (quantity < 1 || quantity > 99)
             {
                 throw new ArgumentException($"Cantidad inválida para un producto.", nameof(items));
             }
 
-            var product = await _products.GetByIdAsync(item.ProductId, cancellationToken).ConfigureAwait(false);
+            var product = await _products.GetByIdAsync(productId, cancellationToken).ConfigureAwait(false);
             if (product is null)
             {
                 throw new InvalidOperationException("Un producto del carrito ya no existe.");
             }
 
-            if (product.Stock < item.Quantity)
+            if (product.Stock < quantity)
             {
                 throw new InvalidOperationException($"Sin stock suficiente de \"{product.Name}\" (quedan {product.Stock}).");
             }
 
-            lines.Add(new OrderItem(product.Id, product.Name, product.Price, item.Quantity));
+            lines.Add(new OrderItem(product.Id, product.Name, product.Price, quantity));
         }
 
         var total = lines.Sum(l => l.UnitPrice * l.Quantity);

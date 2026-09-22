@@ -16,6 +16,8 @@ export function setupAdmin(deps: AdminDeps): {
   renderAdminList: (items: Product[]) => void;
   setUnlocked: (v: boolean) => void;
   isUnlocked: () => boolean;
+  /** Bloquea el admin y resetea los 10 toques (usado al cerrar sesión). */
+  lock: () => void;
 } {
   const backdrop = getEl("modalBackdrop");
   const adminPanel = getEl("adminPanel");
@@ -273,7 +275,7 @@ export function setupAdmin(deps: AdminDeps): {
     }
   }
 
-  return { openModal: openCreate, renderAdminList, setUnlocked, isUnlocked };
+  return { openModal: openCreate, renderAdminList, setUnlocked, isUnlocked, lock };
 }
 
 function getEl(id: string): HTMLElement {

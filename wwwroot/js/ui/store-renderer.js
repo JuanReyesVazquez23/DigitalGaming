@@ -1,6 +1,6 @@
 // Compilado desde ts/ui/store-renderer.ts
 import { formatPrice } from "../domain/models.js";
-export function renderStore(grid, empty, count, items, onAdd) {
+export function renderStore(grid, empty, count, items, onAdd, cartQty) {
   grid.innerHTML = "";
   count.textContent = items.length === 1 ? "1 producto" : `${items.length} productos`;
   empty.style.display = items.length === 0 ? "block" : "none";
@@ -21,11 +21,21 @@ export function renderStore(grid, empty, count, items, onAdd) {
     card.querySelector(".card-title").textContent = p.name;
     card.querySelector(".card-desc").textContent = p.description || "Sin descripción.";
     card.querySelector(".price").textContent = formatPrice(p.price);
+    const reserved = cartQty?.(p.id) ?? 0;
+    const available = Math.max(0, p.stock - reserved);
     const stock = card.querySelector(".stock");
-    stock.textContent = p.stock <= 0 ? "Agotado" : `Stock: ${p.stock}`;
-    if (p.stock <= 5) stock.classList.add("low");
+    if (p.stock <= 0) {
+      stock.textContent = "Agotado";
+    } else if (available <= 0) {
+      stock.textContent = `En tu carrito: ${reserved}`;
+    } else if (reserved > 0) {
+      stock.textContent = `Stock: ${available} · ${reserved} en carrito`;
+    } else {
+      stock.textContent = `Stock: ${p.stock}`;
+    }
+    if (available <= 5) stock.classList.add("low");
     const addBtn = card.querySelector(".btn-add");
-    if (p.stock <= 0) { addBtn.disabled = true; addBtn.textContent = "Agotado"; }
+    if (available <= 0) { addBtn.disabled = true; addBtn.textContent = p.stock <= 0 ? "Agotado" : "Límite en carrito"; }
     else { addBtn.addEventListener("click", () => onAdd?.(p.id)); }
     grid.appendChild(card);
   }

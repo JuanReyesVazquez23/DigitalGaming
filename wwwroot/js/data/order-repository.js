@@ -29,3 +29,21 @@ export function orderLinesFor(cart, catalog) {
     .filter((l) => catalog.some((p) => p.id === l.id))
     .map((l) => ({ productId: l.id, quantity: l.qty }));
 }
+export async function mine(token) {
+  const res = await fetch(`${API}/mine`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (res.status === 401) throw new Error("NO_AUTH");
+  if (!res.ok) throw new Error("No se pudo cargar el historial.");
+  const arr = await res.json();
+  return arr.map((o) => ({
+    id: String(o.id ?? o.Id ?? ""),
+    total: Number(o.total ?? o.Total ?? 0),
+    createdAtUtc: String(o.createdAtUtc ?? o.CreatedAtUtc ?? ""),
+    items: ((o.items ?? o.Items ?? []).map((i) => ({
+      productName: String(i.productName ?? i.ProductName ?? ""),
+      quantity: Number(i.quantity ?? i.Quantity ?? 0),
+      unitPrice: Number(i.unitPrice ?? i.UnitPrice ?? 0),
+    }))),
+  }));
+}

@@ -37,6 +37,10 @@ public sealed class AuthController(IAuthService auth) : ControllerBase
             var session = await _auth.RegisterAsync(dto, ct).ConfigureAwait(false);
             return CreatedAtAction(nameof(Me), null, session);
         }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
         catch (InvalidOperationException ex)
         {
             return Conflict(new { message = ex.Message });
@@ -60,7 +64,7 @@ public sealed class AuthController(IAuthService auth) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var session = await _auth.LoginAsync(dto, ct).ConfigureAwait(false);
+        var session = await _auth.LoginAsync(dto, ct).ConfigureAwait(true);
         return session is null ? Unauthorized(new { message = "Nombre o contraseña incorrectos." }) : Ok(session);
     }
 

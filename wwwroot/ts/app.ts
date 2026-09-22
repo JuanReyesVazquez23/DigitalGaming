@@ -1,11 +1,13 @@
 // Layer: ts/app — composición (entry point). Une domain/data/services/ui.
 import { fetchProducts } from "./data/product-repository.js";
 import { filterProducts } from "./services/product-service.js";
-import { addToCart } from "./services/cart-store.js";
+import { addToCart, getCart } from "./services/cart-store.js";
+import { getSession } from "./services/session-store.js";
 import { renderStore } from "./ui/store-renderer.js";
 import { setupAdmin } from "./ui/admin-controller.js";
 import { setupAuth } from "./ui/auth-controller.js";
 import { setupCart, toast } from "./ui/cart-drawer.js";
+import { setupOrders } from "./ui/orders-controller.js";
 import { setupTapUnlock } from "./ui/tap-unlock.js";
 import type { Product } from "./domain/models.js";
 
@@ -26,12 +28,24 @@ const auth = setupAuth({
   onSessionChanged: () => {
     cart.renderCart();
     void reload();
+    if (getSession()) {
+      // Why: si entró para comprar, le devuelvo el carrito para cerrar la compra.
+      if (getCart().length > 0) cart.openCart();
+    } else {
+      // Why: sin sesión el admin no puede guardar (401); se bloquea para no confundir.
+      admin.lock();
+    }
   },
 });
 
 const cart = setupCart({
   getCatalog: () => all,
   onCheckoutDone: reload,
+  requireAuth: (notice) => auth.openAuth("login", notice),
+  onCartChanged: paint,
+});
+
+setupOrders({
   requireAuth: (notice) => auth.openAuth("login", notice),
 });
 
@@ -76,12 +90,21 @@ async function reload(): Promise<void> {
 
 function paint(): void {
   const items = filterProducts(all, activeCat, search.value);
-  renderStore(grid, empty, count, items, (id) => {
-    addToCart(id);
-    cart.renderCart();
-    const p = all.find((x) => x.id === id);
-    toast(p ? `Agregado: ${p.name} 🛒` : "Agregado al carrito 🛒");
-  });
+  const reserved = new Map(getCart().map((l) => [l.id, l.qty] as const));
+  renderStore(
+    grid,
+    empty,
+    count,
+    items,
+    (id) => {
+      addToCart(id);
+      cart.renderCart();
+      paint();
+      const p = all.find((x) => x.id === id);
+      toast(p ? `Agregado: ${p.name} 🛒` : "Agregado al carrito 🛒");
+    },
+    (id) => reserved.get(id) ?? 0
+  );
   if (statTotal) statTotal.textContent = String(all.length);
 }
 

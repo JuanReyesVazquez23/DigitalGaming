@@ -45,8 +45,12 @@ export function setupAuth(deps) {
   getEl("closeAuthBtn").addEventListener("click", closeAuth);
   getEl("cancelAuthBtn").addEventListener("click", closeAuth);
   backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeAuth(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && backdrop.classList.contains("open")) closeAuth();
+  });
   getEl("logoutBtn").addEventListener("click", () => { clearSession(); refreshHeader(); deps.onSessionChanged(); });
   async function submitAuth() {
+    if (submit.disabled) return;
     const username = user.value.trim();
     const password = pass.value;
     if (username.length < 3) { error.textContent = "El nombre debe tener al menos 3 caracteres."; return; }

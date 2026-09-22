@@ -65,6 +65,9 @@ export function setupAuth(deps: AuthDeps): {
   backdrop.addEventListener("click", (e) => {
     if (e.target === backdrop) closeAuth();
   });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && backdrop.classList.contains("open")) closeAuth();
+  });
   getEl("logoutBtn").addEventListener("click", () => {
     clearSession();
     refreshHeader();
@@ -72,6 +75,8 @@ export function setupAuth(deps: AuthDeps): {
   });
 
   async function submitAuth(): Promise<void> {
+    // Why guard: disabled frena el botón pero no un Enter repetido.
+    if (submit.disabled) return;
     const username = user.value.trim();
     const password = pass.value;
     if (username.length < 3) {

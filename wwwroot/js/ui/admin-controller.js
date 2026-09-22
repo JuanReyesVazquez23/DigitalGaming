@@ -182,7 +182,7 @@ export function setupAdmin(deps) {
       adminList.appendChild(row);
     }
   }
-  return { openModal: openCreate, renderAdminList, setUnlocked, isUnlocked };
+  return { openModal: openCreate, renderAdminList, setUnlocked, isUnlocked, lock };
 }
 function getEl(id) { const el = document.getElementById(id); if (!el) throw new Error(`Falta #${id}`); return el; }
 function getInput(id) { return getEl(id); }

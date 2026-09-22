@@ -31,9 +31,14 @@ export async function fetchProducts(): Promise<Product[]> {
     const data = (await res.json()) as Product[];
     // Normaliza C# (PascalCase) -> TS (camelCase) por si el backend serializa así.
     const normalized = data.map(normalize);
-    if (normalized.length > 0) writeLocal(normalized);
-    const localOnly = readLocal().filter((l) => !normalized.some((n) => n.id === l.id));
-    return [...localOnly, ...normalized];
+    if (normalized.length > 0) {
+      // Why merge y no overwrite: los productos creados sin conexión viven solo
+      // en localStorage; antes se borraban del caché (y de la vista) en el próximo fetch.
+      const previous = readLocal();
+      const localOnly = previous.filter((l) => !normalized.some((n) => n.id === l.id));
+      writeLocal([...localOnly, ...normalized]);
+    }
+    return readLocal();
   } catch {
     return readLocal();
   }
@@ -60,17 +65,16 @@ export async function createProduct(dto: CreateProductDto): Promise<Product> {
     const created = normalize(await res.json());
     writeLocal([created, ...readLocal()]);
     return created;
-  } catch {
+  } catch (e) {
+    // Why: sin login (401) no se inventa un producto local: el admin debe ver el
+    // aviso de sesión en vez de creer que guardó en el servidor.
+    if (e instanceof Error && e.message === "NO_AUTH") throw e;
     writeLocal([fallback, ...readLocal()]);
     return fallback;
   }
 }
 
 export async function updateProduct(id: string, dto: CreateProductDto): Promise<Product> {
-  const applyLocal = (p: Product): Product =>
-    p.id === id
-      ? { ...p, name: dto.name, price: dto.price, category: dto.category, imageUrl: dto.imageUrl, description: dto.description, stock: dto.stock }
-      : p;
   try {
     const res = await fetch(`${API}/${id}`, {
       method: "PUT",
@@ -82,23 +86,36 @@ export async function updateProduct(id: string, dto: CreateProductDto): Promise<
     const updated = normalize(await res.json());
     writeLocal(readLocal().map((p) => (p.id === id ? updated : p)));
     return updated;
-  } catch {
-    const next = readLocal().map(applyLocal);
-    writeLocal(next);
-    const found = next.find((p) => p.id === id);
-    if (!found) throw new Error("Producto no encontrado en caché local.");
-    return found;
+  } catch (e) {
+    if (e instanceof Error && e.message === "NO_AUTH") throw e;
+    // Sin conexión: upsert local para no perder la edición.
+    const current = readLocal();
+    const edited: Product = {
+      id,
+      name: dto.name,
+      price: dto.price,
+      category: dto.category,
+      imageUrl: dto.imageUrl,
+      description: dto.description,
+      stock: dto.stock,
+    };
+    const exists = current.some((p) => p.id === id);
+    writeLocal(exists ? current.map((p) => (p.id === id ? edited : p)) : [edited, ...current]);
+    return edited;
   }
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  writeLocal(readLocal().filter((p) => p.id !== id));
+  const removeLocal = (): void => writeLocal(readLocal().filter((p) => p.id !== id));
   try {
     const res = await fetch(`${API}/${id}`, { method: "DELETE", headers: { ...authHeader() } });
+    // Why API primero: con 401 no se toca el caché (el producto sigue en el servidor
+    // y reaparecería al recargar, confundiendo al admin).
     if (res.status === 401) throw new Error("NO_AUTH");
+    removeLocal();
   } catch (e) {
-    // Why: el borrado local ya se hizo; solo el 401 se propaga para pedir login.
     if (e instanceof Error && e.message === "NO_AUTH") throw e;
+    removeLocal(); // Sin conexión: al menos se borra en local.
   }
 }
 

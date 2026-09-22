@@ -43,9 +43,12 @@ export function setupCart(deps) {
       row.querySelector("strong").textContent = p.name;
       row.querySelector(".meta span").textContent = `${formatPrice(p.price)} c/u`;
       row.querySelector(".qty b").textContent = String(line.qty);
-      row.querySelector('[data-act="dec"]').addEventListener("click", () => { setQty(line.id, line.qty - 1); renderCart(); });
-      row.querySelector('[data-act="inc"]').addEventListener("click", () => { setQty(line.id, line.qty + 1); renderCart(); });
-      row.querySelector(".cart-remove").addEventListener("click", () => { removeFromCart(line.id); renderCart(); });
+      row.querySelector('[data-act="dec"]').addEventListener("click", () => { setQty(line.id, line.qty - 1); renderCart(); deps.onCartChanged(); });
+      row.querySelector('[data-act="inc"]').addEventListener("click", () => {
+        if (line.qty + 1 > p.stock) { toast(`Solo quedan ${p.stock} de "${p.name}".`); return; }
+        setQty(line.id, line.qty + 1); renderCart(); deps.onCartChanged();
+      });
+      row.querySelector(".cart-remove").addEventListener("click", () => { removeFromCart(line.id); renderCart(); deps.onCartChanged(); });
       itemsEl.appendChild(row);
     }
     totalEl.textContent = formatPrice(total);
@@ -80,6 +83,9 @@ export function setupCart(deps) {
   getEl("cartBtn").addEventListener("click", openCart);
   getEl("closeCartBtn").addEventListener("click", closeCart);
   backdrop.addEventListener("click", closeCart);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && drawer.classList.contains("open")) closeCart();
+  });
   checkoutBtn.addEventListener("click", () => void doCheckout());
   updateBadge();
   return { renderCart, openCart, updateBadge };

@@ -19,9 +19,12 @@ export async function fetchProducts() {
     if (!res.ok) throw new Error(`API ${res.status}`);
     const data = await res.json();
     const normalized = data.map(normalize);
-    if (normalized.length > 0) writeLocal(normalized);
-    const localOnly = readLocal().filter((l) => !normalized.some((n) => n.id === l.id));
-    return [...localOnly, ...normalized];
+    if (normalized.length > 0) {
+      const previous = readLocal();
+      const localOnly = previous.filter((l) => !normalized.some((n) => n.id === l.id));
+      writeLocal([...localOnly, ...normalized]);
+    }
+    return readLocal();
   } catch { return readLocal(); }
 }
 export async function createProduct(dto) {
@@ -37,15 +40,13 @@ export async function createProduct(dto) {
     const created = normalize(await res.json());
     writeLocal([created, ...readLocal()]);
     return created;
-  } catch {
+  } catch (e) {
+    if (e instanceof Error && e.message === "NO_AUTH") throw e;
     writeLocal([fallback, ...readLocal()]);
     return fallback;
   }
 }
 export async function updateProduct(id, dto) {
-  const applyLocal = (p) => p.id === id
-    ? { ...p, name: dto.name, price: dto.price, category: dto.category, imageUrl: dto.imageUrl, description: dto.description, stock: dto.stock }
-    : p;
   try {
     const res = await fetch(`${API}/${id}`, { method: "PUT", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify(dto) });
     if (res.status === 401) throw new Error("NO_AUTH");
@@ -53,21 +54,24 @@ export async function updateProduct(id, dto) {
     const updated = normalize(await res.json());
     writeLocal(readLocal().map((p) => (p.id === id ? updated : p)));
     return updated;
-  } catch {
-    const next = readLocal().map(applyLocal);
-    writeLocal(next);
-    const found = next.find((p) => p.id === id);
-    if (!found) throw new Error("Producto no encontrado en caché local.");
-    return found;
+  } catch (e) {
+    if (e instanceof Error && e.message === "NO_AUTH") throw e;
+    const current = readLocal();
+    const edited = { id, name: dto.name, price: dto.price, category: dto.category, imageUrl: dto.imageUrl, description: dto.description, stock: dto.stock };
+    const exists = current.some((p) => p.id === id);
+    writeLocal(exists ? current.map((p) => (p.id === id ? edited : p)) : [edited, ...current]);
+    return edited;
   }
 }
 export async function deleteProduct(id) {
-  writeLocal(readLocal().filter((p) => p.id !== id));
+  const removeLocal = () => writeLocal(readLocal().filter((p) => p.id !== id));
   try {
     const res = await fetch(`${API}/${id}`, { method: "DELETE", headers: { ...authHeader() } });
     if (res.status === 401) throw new Error("NO_AUTH");
+    removeLocal();
   } catch (e) {
     if (e instanceof Error && e.message === "NO_AUTH") throw e;
+    removeLocal();
   }
 }
 function normalize(p) {

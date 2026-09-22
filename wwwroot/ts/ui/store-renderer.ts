@@ -6,7 +6,9 @@ export function renderStore(
   empty: HTMLElement,
   count: HTMLElement,
   items: Product[],
-  onAdd?: (id: string) => void
+  onAdd?: (id: string) => void,
+  /** Cantidad de ese producto ya apartada en el carrito (para mostrar stock en vivo). */
+  cartQty?: (id: string) => number
 ): void {
   grid.innerHTML = "";
   count.textContent = items.length === 1 ? "1 producto" : `${items.length} productos`;
@@ -39,13 +41,24 @@ export function renderStore(
     (card.querySelector(".card-title") as HTMLElement).textContent = p.name;
     (card.querySelector(".card-desc") as HTMLElement).textContent = p.description || "Sin descripción.";
     (card.querySelector(".price") as HTMLElement).textContent = formatPrice(p.price);
+    // Stock en vivo: lo que queda menos lo que ya apartaste en el carrito.
+    const reserved = cartQty?.(p.id) ?? 0;
+    const available = Math.max(0, p.stock - reserved);
     const stock = card.querySelector(".stock") as HTMLElement;
-    stock.textContent = p.stock <= 0 ? "Agotado" : `Stock: ${p.stock}`;
-    if (p.stock <= 5) stock.classList.add("low");
-    const addBtn = card.querySelector(".btn-add") as HTMLButtonElement;
     if (p.stock <= 0) {
+      stock.textContent = "Agotado";
+    } else if (available <= 0) {
+      stock.textContent = `En tu carrito: ${reserved}`;
+    } else if (reserved > 0) {
+      stock.textContent = `Stock: ${available} · ${reserved} en carrito`;
+    } else {
+      stock.textContent = `Stock: ${p.stock}`;
+    }
+    if (available <= 5) stock.classList.add("low");
+    const addBtn = card.querySelector(".btn-add") as HTMLButtonElement;
+    if (available <= 0) {
       addBtn.disabled = true;
-      addBtn.textContent = "Agotado";
+      addBtn.textContent = p.stock <= 0 ? "Agotado" : "Límite en carrito";
     } else {
       addBtn.addEventListener("click", () => onAdd?.(p.id));
     }
