@@ -2,7 +2,7 @@
   "name": "digitalgaming",
   "private": true,
   "type": "module",
-  "description": "DigitalMarket en Vercel: frontend estático + Functions Node + Neon Postgres",
+  "description": "DigitalGaming en Vercel: frontend estático + Functions Node + Neon Postgres",
   "dependencies": {
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1"
