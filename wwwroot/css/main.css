@@ -10,6 +10,7 @@
 @import url("./layout/_header.css") layer(layout);
 @import url("./layout/_grid.css") layer(layout);
 @import url("./layout/_footer.css") layer(layout);
+@import url("./layout/_responsive.css") layer(layout);
 
 @import url("./components/_card.css") layer(components);
 @import url("./components/_buttons.css") layer(components);

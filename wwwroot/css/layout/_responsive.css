@@ -1,0 +1,91 @@
+/* Layer: layout/responsive — refinamiento móvil: ritmo, espacio y táctil.
+   Se importa al final de layout para prevalecer con igual especificidad. */
+
+/* ---------- Teléfonos (≤640px) ---------- */
+@media (max-width: 640px) {
+  /* Ritmo general más aireado */
+  .container { padding: 16px 14px 56px; }
+  .hero { padding: 20px 18px; margin-top: 14px; }
+  .hero-stats { gap: 18px; flex-wrap: wrap; }
+  .toolbar { margin: 18px 0 12px; gap: 10px; }
+
+  /* Header en dos filas ordenadas: marca + accesos / buscador full */
+  .topbar-inner { padding: 10px 14px; gap: 10px; }
+  .brand-title { font-size: 1.08rem; }
+  .brand-sub { font-size: 0.7rem; }
+  .tap-hint { min-height: 0; }
+  .topbar-actions { gap: 10px; }
+  .search input {
+    font-size: 16px; /* evita zoom automático en iOS */
+    padding: 11px 14px 11px 36px; min-height: 44px;
+  }
+  .session-area { gap: 6px; }
+  .btn-icon { width: 40px; height: 40px; }
+  .admin-bar { padding: 4px 5px 4px 9px; }
+  .user-name { max-width: 80px; }
+
+  /* Filtros: tira deslizable con snap en vez de amontonarse */
+  .toolbar { align-items: stretch; flex-direction: column; }
+  .filters {
+    flex-wrap: nowrap; overflow-x: auto; gap: 8px;
+    padding: 2px 14px 10px; margin: 0 -14px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .chip { flex: none; scroll-snap-align: start; padding: 9px 16px; min-height: 40px; }
+  #countLabel { padding: 0 2px; }
+
+  /* Cards espaciosas de una columna */
+  .grid { gap: 18px; }
+  .card-body { padding: 16px 16px 17px; gap: 9px; }
+  .card-media { aspect-ratio: 16 / 10; }
+  .card-title { font-size: 1.02rem; }
+  .card-desc { font-size: 0.88rem; }
+  .card-foot { padding-top: 12px; }
+  .btn-add { min-height: 46px; font-size: 0.9rem; }
+  .btn { min-height: 42px; }
+
+  /* Banner GTA: tira compacta legible */
+  .gta-copy { gap: 5px; }
+  .gta-actions .btn { min-height: 42px; }
+
+  /* Sheet modal con área segura y unidades dinámicas */
+  .modal { max-height: 92vh; max-height: 92dvh; }
+  .modal-body { padding: 16px; }
+  .modal-foot { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+  .field input, .field select, .field textarea { font-size: 16px; padding: 11px; }
+
+  /* Carrito full + controles táctiles */
+  .cart-head, .cart-body { padding-left: 16px; padding-right: 16px; }
+  .cart-foot { padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); }
+  .cart-item { gap: 12px; padding: 10px; }
+  .cart-item img { width: 64px; height: 48px; }
+  .qty button { width: 30px; height: 30px; font-size: 1rem; }
+  #checkoutBtn { min-height: 48px; font-size: 0.95rem; }
+
+  /* Admin apilado y respirable */
+  .admin-panel { padding: 16px; }
+  .admin-head { flex-direction: column; }
+  .admin-row { padding: 12px; }
+  .admin-actions .btn { min-height: 42px; }
+
+  /* Órdenes */
+  .order { padding: 12px 13px; }
+
+  /* Toast sobre área segura */
+  .toast { bottom: calc(20px + env(safe-area-inset-bottom)); }
+
+  .footer { flex-direction: column; gap: 2px; }
+}
+
+/* ---------- Teléfonos pequeños (≤380px) ---------- */
+@media (max-width: 380px) {
+  .container { padding: 14px 12px 48px; }
+  .brand-title { font-size: 0.98rem; }
+  .brand-sub { display: none; }
+  .hero h2 { font-size: 1.4rem; }
+  .search input { min-width: 0; }
+  .topbar-actions { gap: 8px; }
+}
