@@ -1,6 +1,11 @@
 /* Layer: layout/responsive — refinamiento móvil: ritmo, espacio y táctil.
    Se importa al final de layout para prevalecer con igual especificidad. */
 
+/* Sin scroll horizontal: nada puede pedir zoom-out (clip conserva el sticky). */
+html, body { overflow-x: clip; }
+.grid > *, .topbar-inner > *, .toolbar > *, .admin-head > * { min-width: 0; }
+img { max-width: 100%; }
+
 /* ---------- Teléfonos (≤640px) ---------- */
 @media (max-width: 640px) {
   /* Ritmo general más aireado */
@@ -9,8 +14,13 @@
   .hero-stats { gap: 18px; flex-wrap: wrap; }
   .toolbar { margin: 18px 0 12px; gap: 10px; }
 
-  /* Header en dos filas ordenadas: marca + accesos / buscador full */
+  /* Header en dos filas ordenadas: marca + accesos / buscador full.
+     Todo puede encogerse y envolverse: nada empuja el ancho. */
   .topbar-inner { padding: 10px 14px; gap: 10px; }
+  .brand { flex: 1 1 auto; }
+  .topbar-actions { flex-wrap: wrap; row-gap: 10px; }
+  .search, .search input { min-width: 0; }
+  .admin-bar { flex-wrap: wrap; max-width: 100%; row-gap: 6px; }
   .brand-title { font-size: 1.08rem; }
   .brand-sub { font-size: 0.7rem; }
   .tap-hint { min-height: 0; }
