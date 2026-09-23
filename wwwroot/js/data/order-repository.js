@@ -1,5 +1,6 @@
 // Compilado desde ts/data/order-repository.ts
-const API = "/api/orders";
+import { api } from "../services/api-config.js";
+const API = api("/api/orders");
 export async function checkout(lines, token) {
   const res = await fetch(API, {
     method: "POST",

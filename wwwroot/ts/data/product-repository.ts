@@ -1,8 +1,9 @@
 // Layer: ts/data — acceso a datos (API ASP.NET + respaldo localStorage).
 import type { CreateProductDto, Product } from "../domain/models.js";
+import { api } from "../services/api-config.js";
 import { authHeader } from "../services/session-store.js";
 
-const API = "/api/products";
+const API = api("/api/products");
 const LS_KEY = "dm_products_v1";
 
 function readLocal(): Product[] {

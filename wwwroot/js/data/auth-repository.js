@@ -1,5 +1,6 @@
 // Compilado desde ts/data/auth-repository.ts
-const API = "/api/auth";
+import { api } from "../services/api-config.js";
+const API = api("/api/auth");
 async function parseSession(res) {
   const data = await res.json();
   return {

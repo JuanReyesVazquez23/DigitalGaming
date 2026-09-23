@@ -1,6 +1,7 @@
 // Compilado desde ts/data/product-repository.ts
+import { api } from "../services/api-config.js";
 import { authHeader } from "../services/session-store.js";
-const API = "/api/products";
+const API = api("/api/products");
 const LS_KEY = "dm_products_v1";
 function readLocal() {
   try {

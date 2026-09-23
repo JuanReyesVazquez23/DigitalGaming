@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DigitalMarket")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5134ed5dc306a889bdaa8f8f468314d5835c33d9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8fd73eb0e507defa063d54a1b500c2ba2fde71aa")]
 [assembly: System.Reflection.AssemblyProductAttribute("DigitalMarket")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DigitalMarket")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

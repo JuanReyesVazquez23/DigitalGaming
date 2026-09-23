@@ -1,7 +1,8 @@
 // Layer: ts/data/auth-repository — registro y login contra /api/auth (devuelve JWT).
 import type { Session } from "../domain/auth.js";
+import { api } from "../services/api-config.js";
 
-const API = "/api/auth";
+const API = api("/api/auth");
 
 async function parseSession(res: Response): Promise<Session> {
   const data = await res.json();

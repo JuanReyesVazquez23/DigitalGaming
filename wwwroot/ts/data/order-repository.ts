@@ -1,8 +1,9 @@
 // Layer: ts/data/order-repository — compra (requiere JWT).
 import type { CheckoutLine } from "../domain/auth.js";
 import type { Product } from "../domain/models.js";
+import { api } from "../services/api-config.js";
 
-const API = "/api/orders";
+const API = api("/api/orders");
 
 export interface PlacedOrder {
   id: string;
