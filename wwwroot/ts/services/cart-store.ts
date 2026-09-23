@@ -1,7 +1,7 @@
 // Layer: ts/services/cart-store — carrito en localStorage (funciona sin login; la compra sí lo pide).
 import type { CartLine } from "../domain/auth.js";
 
-const KEY = "dm_cart_v1";
+const KEY = "dg_cart_v1";
 
 export function getCart(): CartLine[] {
   try {

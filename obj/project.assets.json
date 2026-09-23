@@ -2516,9 +2516,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\DigitalMarket.csproj",
-      "projectName": "DigitalMarket",
-      "projectPath": "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\DigitalMarket.csproj",
+      "projectUniqueName": "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\DigitalGaming.csproj",
+      "projectName": "DigitalGaming",
+      "projectPath": "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\DigitalGaming.csproj",
       "packagesPath": "C:\\Users\\jeanx\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\obj\\",
       "projectStyle": "PackageReference",

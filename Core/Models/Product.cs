@@ -1,7 +1,7 @@
-namespace DigitalMarket.Core.Models;
+namespace DigitalGaming.Core.Models;
 
 /// <summary>
-/// Represents a product sold in the DigitalMarket videogame store.
+/// Represents a product sold in the DigitalGaming videogame store.
 /// </summary>
 /// <remarks>
 /// Domain entity (Layer: Core/Domain). No dependencies on infrastructure.

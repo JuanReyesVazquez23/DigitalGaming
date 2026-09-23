@@ -1,9 +1,9 @@
-using DigitalMarket.Core.Models;
-using DigitalMarket.Infrastructure.Persistence.Entities;
-using DigitalMarket.Infrastructure.Security;
+using DigitalGaming.Core.Models;
+using DigitalGaming.Infrastructure.Persistence.Entities;
+using DigitalGaming.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 
-namespace DigitalMarket.Infrastructure.Persistence;
+namespace DigitalGaming.Infrastructure.Persistence;
 
 /// <summary>
 /// Seeds Postgres on first boot (GTA VI product + demo admin), mirroring the InMemory seed.

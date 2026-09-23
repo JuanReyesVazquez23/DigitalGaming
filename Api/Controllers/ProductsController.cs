@@ -1,10 +1,10 @@
-using DigitalMarket.Application.DTOs;
-using DigitalMarket.Core.Interfaces;
-using DigitalMarket.Core.Models;
+using DigitalGaming.Application.DTOs;
+using DigitalGaming.Core.Interfaces;
+using DigitalGaming.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DigitalMarket.Api.Controllers;
+namespace DigitalGaming.Api.Controllers;
 
 /// <summary>
 /// Exposes the store catalog as a REST API for the HTML/TS frontend.

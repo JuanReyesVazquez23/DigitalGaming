@@ -1,6 +1,6 @@
-using DigitalMarket.Application.DTOs;
+using DigitalGaming.Application.DTOs;
 
-namespace DigitalMarket.Core.Interfaces;
+namespace DigitalGaming.Core.Interfaces;
 
 /// <summary>
 /// Defines registration and login operations.

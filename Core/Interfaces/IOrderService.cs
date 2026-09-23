@@ -1,7 +1,7 @@
-using DigitalMarket.Application.DTOs;
-using DigitalMarket.Core.Models;
+using DigitalGaming.Application.DTOs;
+using DigitalGaming.Core.Models;
 
-namespace DigitalMarket.Core.Interfaces;
+namespace DigitalGaming.Core.Interfaces;
 
 /// <summary>
 /// Defines checkout operations (cart purchase, login required).

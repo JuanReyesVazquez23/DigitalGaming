@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
-using DigitalMarket.Core.Interfaces;
-using DigitalMarket.Core.Models;
+using DigitalGaming.Core.Interfaces;
+using DigitalGaming.Core.Models;
 
-namespace DigitalMarket.Infrastructure.Repositories;
+namespace DigitalGaming.Infrastructure.Repositories;
 
 /// <summary>
 /// Provides an in-memory implementation of <see cref="IOrderRepository"/> for the MVP.

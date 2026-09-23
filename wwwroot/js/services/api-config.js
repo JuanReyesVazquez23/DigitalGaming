@@ -2,7 +2,7 @@
 export function apiBase() {
   try {
     if (typeof window === "undefined") return "";
-    const raw = typeof window.DM_API_URL === "string" ? window.DM_API_URL.trim() : "";
+    const raw = typeof window.DG_API_URL === "string" ? window.DG_API_URL.trim() : "";
     return raw.replace(/\/+$/, "");
   } catch { return ""; }
 }

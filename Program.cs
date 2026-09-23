@@ -1,10 +1,10 @@
 using System.Text;
 using System.Text.Json.Serialization;
-using DigitalMarket.Application.Services;
-using DigitalMarket.Core.Interfaces;
-using DigitalMarket.Infrastructure.Persistence;
-using DigitalMarket.Infrastructure.Repositories;
-using DigitalMarket.Infrastructure.Security;
+using DigitalGaming.Application.Services;
+using DigitalGaming.Core.Interfaces;
+using DigitalGaming.Infrastructure.Persistence;
+using DigitalGaming.Infrastructure.Repositories;
+using DigitalGaming.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

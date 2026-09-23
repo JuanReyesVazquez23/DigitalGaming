@@ -2,7 +2,7 @@
 import { api } from "../services/api-config.js";
 import { authHeader } from "../services/session-store.js";
 const API = api("/api/products");
-const LS_KEY = "dm_products_v1";
+const LS_KEY = "dg_products_v1";
 function readLocal() {
   try {
     const raw = localStorage.getItem(LS_KEY);

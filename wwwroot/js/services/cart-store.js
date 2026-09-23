@@ -1,5 +1,5 @@
 // Compilado desde ts/services/cart-store.ts
-const KEY = "dm_cart_v1";
+const KEY = "dg_cart_v1";
 export function getCart() {
   try {
     const raw = localStorage.getItem(KEY);

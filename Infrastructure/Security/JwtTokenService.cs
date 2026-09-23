@@ -1,12 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using DigitalMarket.Core.Interfaces;
-using DigitalMarket.Core.Models;
+using DigitalGaming.Core.Interfaces;
+using DigitalGaming.Core.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace DigitalMarket.Infrastructure.Security;
+namespace DigitalGaming.Infrastructure.Security;
 
 /// <summary>
 /// Creates signed JWTs for authenticated users.

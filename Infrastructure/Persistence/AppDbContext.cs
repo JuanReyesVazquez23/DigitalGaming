@@ -1,7 +1,7 @@
-using DigitalMarket.Infrastructure.Persistence.Entities;
+using DigitalGaming.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DigitalMarket.Infrastructure.Persistence;
+namespace DigitalGaming.Infrastructure.Persistence;
 
 /// <summary>
 /// EF Core context for Postgres (Supabase). Used only when a connection string is configured.

@@ -1,4 +1,4 @@
-namespace DigitalMarket.Core.Models;
+namespace DigitalGaming.Core.Models;
 
 /// <summary>
 /// Represents a registered store user.

@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
-using DigitalMarket.Core.Interfaces;
-using DigitalMarket.Core.Models;
-using DigitalMarket.Infrastructure.Security;
+using DigitalGaming.Core.Interfaces;
+using DigitalGaming.Core.Models;
+using DigitalGaming.Infrastructure.Security;
 
-namespace DigitalMarket.Infrastructure.Repositories;
+namespace DigitalGaming.Infrastructure.Repositories;
 
 /// <summary>
 /// Provides an in-memory implementation of <see cref="IUserRepository"/> for the MVP.

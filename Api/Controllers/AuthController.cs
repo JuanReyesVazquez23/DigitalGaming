@@ -1,10 +1,10 @@
 using System.Security.Claims;
-using DigitalMarket.Application.DTOs;
-using DigitalMarket.Core.Interfaces;
+using DigitalGaming.Application.DTOs;
+using DigitalGaming.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DigitalMarket.Api.Controllers;
+namespace DigitalGaming.Api.Controllers;
 
 /// <summary>
 /// Exposes registration and login (username + password) returning JWT sessions.

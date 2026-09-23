@@ -1,4 +1,4 @@
-namespace DigitalMarket.Core.Models;
+namespace DigitalGaming.Core.Models;
 
 /// <summary>
 /// Gets the product categories available in the store.

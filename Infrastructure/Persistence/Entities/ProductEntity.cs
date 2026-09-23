@@ -1,6 +1,6 @@
-using DigitalMarket.Core.Models;
+using DigitalGaming.Core.Models;
 
-namespace DigitalMarket.Infrastructure.Persistence.Entities;
+namespace DigitalGaming.Infrastructure.Persistence.Entities;
 
 /// <summary>
 /// Persists a <see cref="Product"/> in Postgres.

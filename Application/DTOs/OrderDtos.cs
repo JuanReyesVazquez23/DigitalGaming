@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DigitalMarket.Application.DTOs;
+namespace DigitalGaming.Application.DTOs;
 
 /// <summary>
 /// Represents one cart line sent to checkout.

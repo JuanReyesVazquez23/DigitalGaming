@@ -1,8 +1,8 @@
-using DigitalMarket.Application.DTOs;
-using DigitalMarket.Core.Interfaces;
-using DigitalMarket.Core.Models;
+using DigitalGaming.Application.DTOs;
+using DigitalGaming.Core.Interfaces;
+using DigitalGaming.Core.Models;
 
-namespace DigitalMarket.Application.Services;
+namespace DigitalGaming.Application.Services;
 
 /// <summary>
 /// Implements checkout: validates stock, snapshots prices and discounts inventory.

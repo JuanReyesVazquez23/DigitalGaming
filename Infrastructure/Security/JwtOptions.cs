@@ -1,4 +1,4 @@
-namespace DigitalMarket.Infrastructure.Security;
+namespace DigitalGaming.Infrastructure.Security;
 
 /// <summary>
 /// Gets the strongly-typed JWT settings bound from configuration.
@@ -14,12 +14,12 @@ public sealed class JwtOptions
     /// <summary>
     /// Gets or sets the token issuer.
     /// </summary>
-    public string Issuer { get; set; } = "DigitalMarket";
+    public string Issuer { get; set; } = "DigitalGaming";
 
     /// <summary>
     /// Gets or sets the token audience.
     /// </summary>
-    public string Audience { get; set; } = "DigitalMarket";
+    public string Audience { get; set; } = "DigitalGaming";
 
     /// <summary>
     /// Gets or sets the token lifetime in minutes.

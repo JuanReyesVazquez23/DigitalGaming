@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using DigitalMarket.Core.Models;
+using DigitalGaming.Core.Models;
 
-namespace DigitalMarket.Application.DTOs;
+namespace DigitalGaming.Application.DTOs;
 
 /// <summary>
 /// Represents the payload to create a product from the admin panel.

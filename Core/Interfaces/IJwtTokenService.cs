@@ -1,6 +1,6 @@
-using DigitalMarket.Core.Models;
+using DigitalGaming.Core.Models;
 
-namespace DigitalMarket.Core.Interfaces;
+namespace DigitalGaming.Core.Interfaces;
 
 /// <summary>
 /// Defines JWT creation for authenticated users.

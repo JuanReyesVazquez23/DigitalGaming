@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DigitalMarket.Application.DTOs;
+namespace DigitalGaming.Application.DTOs;
 
 /// <summary>
 /// Represents the payload to register with username and password.

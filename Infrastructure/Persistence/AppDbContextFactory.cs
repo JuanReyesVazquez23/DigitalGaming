@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace DigitalMarket.Infrastructure.Persistence;
+namespace DigitalGaming.Infrastructure.Persistence;
 
 /// <summary>
 /// Creates <see cref="AppDbContext"/> at design time (dotnet-ef). Never connects; only builds the model.

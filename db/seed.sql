@@ -1,4 +1,4 @@
--- DigitalMarket seed para Neon: corre esto en el SQL Editor DESPUÉS de db/schema.sql.
+-- DigitalGaming seed para Neon: corre esto en el SQL Editor DESPUÉS de db/schema.sql.
 -- Idempotente: solo inserta si no existe.
 
 -- GTA VI preventa (único producto inicial)

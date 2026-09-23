@@ -1,6 +1,6 @@
-using DigitalMarket.Core.Models;
+using DigitalGaming.Core.Models;
 
-namespace DigitalMarket.Infrastructure.Persistence.Entities;
+namespace DigitalGaming.Infrastructure.Persistence.Entities;
 
 /// <summary>
 /// Persists an <see cref="Order"/> in Postgres.

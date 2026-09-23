@@ -1,10 +1,10 @@
-using DigitalMarket.Core.Interfaces;
-using DigitalMarket.Core.Models;
-using DigitalMarket.Infrastructure.Persistence;
-using DigitalMarket.Infrastructure.Persistence.Entities;
+using DigitalGaming.Core.Interfaces;
+using DigitalGaming.Core.Models;
+using DigitalGaming.Infrastructure.Persistence;
+using DigitalGaming.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DigitalMarket.Infrastructure.Repositories;
+namespace DigitalGaming.Infrastructure.Repositories;
 
 /// <summary>
 /// Provides a Postgres implementation of <see cref="IUserRepository"/> via EF Core.

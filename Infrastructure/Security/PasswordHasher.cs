@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace DigitalMarket.Infrastructure.Security;
+namespace DigitalGaming.Infrastructure.Security;
 
 /// <summary>
 /// Hashes and verifies passwords with PBKDF2-SHA256 (no plain passwords stored).

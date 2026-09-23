@@ -7,6 +7,6 @@ const api = (process.env.API_URL ?? "").trim().replace(/\/+$/, "");
 const out = new URL("../wwwroot/js/config.js", import.meta.url);
 writeFileSync(
   out,
-  `// Generado en build de Vercel desde API_URL. No editar a mano.\nwindow.DM_API_URL = ${JSON.stringify(api)};\n`
+  `// Generado en build de Vercel desde API_URL. No editar a mano.\nwindow.DG_API_URL = ${JSON.stringify(api)};\n`
 );
 console.log(`config.js -> API_URL=${api === "" ? "(mismo origen)" : api}`);

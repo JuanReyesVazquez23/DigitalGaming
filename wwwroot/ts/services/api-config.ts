@@ -1,10 +1,10 @@
 // Layer: ts/services/api-config — base del API.
-// Local: mismo origen (""). Vercel: window.DM_API_URL generada en build desde API_URL.
+// Local: mismo origen (""). Vercel: window.DG_API_URL generada en build desde API_URL.
 export function apiBase(): string {
   try {
     if (typeof window === "undefined") return "";
-    const w = window as unknown as { DM_API_URL?: unknown };
-    const raw = typeof w.DM_API_URL === "string" ? w.DM_API_URL.trim() : "";
+    const w = window as unknown as { DG_API_URL?: unknown };
+    const raw = typeof w.DG_API_URL === "string" ? w.DG_API_URL.trim() : "";
     return raw.replace(/\/+$/, "");
   } catch {
     return "";

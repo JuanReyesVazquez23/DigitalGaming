@@ -1,9 +1,9 @@
-using DigitalMarket.Application.DTOs;
-using DigitalMarket.Core.Interfaces;
-using DigitalMarket.Core.Models;
-using DigitalMarket.Infrastructure.Security;
+using DigitalGaming.Application.DTOs;
+using DigitalGaming.Core.Interfaces;
+using DigitalGaming.Core.Models;
+using DigitalGaming.Infrastructure.Security;
 
-namespace DigitalMarket.Application.Services;
+namespace DigitalGaming.Application.Services;
 
 /// <summary>
 /// Implements registration and login with PBKDF2 hashes and JWT sessions.

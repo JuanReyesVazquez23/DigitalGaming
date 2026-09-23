@@ -13,8 +13,8 @@ function jwtKey() {
 
 export function jwtOpts() {
   return {
-    issuer: process.env.JWT_ISSUER || "DigitalMarket",
-    audience: process.env.JWT_AUDIENCE || "DigitalMarket",
+    issuer: process.env.JWT_ISSUER || "DigitalGaming",
+    audience: process.env.JWT_AUDIENCE || "DigitalGaming",
     expiresIn: "12h",
   };
 }
