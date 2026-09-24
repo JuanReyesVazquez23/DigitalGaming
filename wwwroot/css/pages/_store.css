@@ -14,8 +14,8 @@
 .hero h2 span { color: var(--red-500); }
 .hero-stats { display: flex; gap: 22px; margin-top: 6px; }
 .hero-stats div { display: grid; }
-.hero-stats strong { font-family: var(--font-display); font-size: 1.1rem; }
-.hero-stats span { font-size: 0.72rem; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.08em; }
+.hero-stats strong { font-family: var(--font-display); font-size: 1.2rem; }
+.hero-stats span { font-size: 0.78rem; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.08em; }
 .empty {
   border: 1px dashed #33333a; border-radius: var(--radius);
   padding: 30px; text-align: center; color: var(--text-2); font-size: 0.9rem;

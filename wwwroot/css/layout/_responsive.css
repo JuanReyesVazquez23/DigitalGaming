@@ -57,8 +57,8 @@ img { max-width: 100%; }
   .card { border-radius: 18px; }
   .card-body { padding: 18px 18px 19px; gap: 10px; }
   .card-media { aspect-ratio: 16 / 10; }
-  .card-title { font-size: 1.04rem; }
-  .card-desc { font-size: 0.88rem; line-height: 1.55; }
+  .card-title { font-size: 1.1rem; }
+  .card-desc { font-size: 0.94rem; line-height: 1.55; }
   .card-foot { padding-top: 13px; margin-top: 6px; }
   .btn-add { min-height: 48px; font-size: 0.92rem; margin-top: 8px; }
   .btn { min-height: 42px; }

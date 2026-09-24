@@ -1,15 +1,15 @@
 /* Layer: components/forms — rejillas compactas que colapsan en móvil. */
 .form-section { display: grid; gap: 10px; }
 .form-section > h3 {
-  font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+  font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--text-2); font-family: var(--font-body); font-weight: 700;
   padding-bottom: 6px; border-bottom: 1px solid var(--line-soft);
 }
 .field { display: grid; gap: 5px; }
-.field label { font-size: 0.8rem; color: var(--text-1); font-weight: 600; }
+.field label { font-size: 0.86rem; color: var(--text-1); font-weight: 600; }
 .field input, .field select, .field textarea {
   background: #0e0e11; border: 1px solid var(--line); color: var(--text-0);
-  border-radius: var(--radius-sm); padding: 9px 11px; width: 100%; font-size: 0.88rem;
+  border-radius: var(--radius-sm); padding: 10px 12px; width: 100%; font-size: 0.94rem;
 }
 .field textarea { resize: vertical; min-height: 52px; }
 .field input[type="file"] { padding: 7px 10px; font-size: 0.8rem; color: var(--text-2); }
@@ -25,10 +25,10 @@
   width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-sm);
   border: 1px solid var(--line); background: #000;
 }
-.form-error { color: #ff8d87; font-size: 0.83rem; min-height: 1.2em; }
-.img-hint { font-size: 0.75rem; color: var(--text-2); margin-top: 4px; line-height: 1.45; }
+.form-error { color: #ff8d87; font-size: 0.88rem; min-height: 1.2em; }
+.img-hint { font-size: 0.8rem; color: var(--text-2); margin-top: 4px; line-height: 1.45; }
 .img-hint strong { color: var(--text-1); }
-.img-status { font-size: 0.78rem; color: #ffb3ab; min-height: 1.2em; margin-top: 6px; }
+.img-status { font-size: 0.84rem; color: #ffb3ab; min-height: 1.2em; margin-top: 6px; }
 .img-status:empty { display: none; }
 
 @media (max-width: 640px) {

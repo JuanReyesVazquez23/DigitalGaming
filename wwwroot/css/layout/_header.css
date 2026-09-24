@@ -23,13 +23,13 @@
   background: var(--red-500); border-radius: 2px;
 }
 .brand-text { min-width: 0; }
-.tap-hint { font-size: 0.72rem; color: var(--text-2); min-height: 1.1em; }
+.tap-hint { font-size: 0.78rem; color: var(--text-2); min-height: 1.1em; }
 .topbar-actions { display: flex; align-items: center; gap: 12px; }
 .search { position: relative; display: flex; align-items: center; }
 .search-icon { position: absolute; left: 11px; color: var(--text-2); pointer-events: none; }
 .search input {
   background: var(--bg-1); border: 1px solid var(--line); color: var(--text-0);
-  border-radius: 999px; padding: 9px 14px 9px 34px; width: 250px; font-size: 0.88rem;
+  border-radius: 999px; padding: 10px 14px 10px 34px; width: 250px; font-size: 0.94rem;
 }
 .search input::placeholder { color: var(--text-2); }
 .search input:focus { outline: none; border-color: var(--red-600); box-shadow: 0 0 0 3px var(--red-glow); }
@@ -40,7 +40,7 @@
 .admin-bar[hidden] { display: none; }
 .admin-pill {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; color: var(--red-ink);
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; color: var(--red-ink);
 }
 .admin-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red-500); box-shadow: 0 0 8px var(--red-glow); }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; }

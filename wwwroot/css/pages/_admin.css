@@ -14,7 +14,7 @@
 }
 .admin-row img { width: 62px; height: 42px; object-fit: cover; border-radius: 8px; flex: none; background: #000; }
 .admin-row .meta { flex: 1; min-width: 0; }
-.admin-row .meta strong { font-size: 0.86rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin-row .meta strong { font-size: 0.92rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .admin-actions { display: flex; gap: 8px; flex: none; }
 .unlock-shake { animation: shake 0.3s; }
 @keyframes shake { 25% { transform: translateX(-3px); } 50% { transform: translateX(3px); } 75% { transform: translateX(-2px); } }

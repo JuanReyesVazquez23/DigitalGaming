@@ -21,7 +21,7 @@
   display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex: none;
   background: #141417;
 }
-.modal-head h2 { font-size: 1.15rem; margin-top: 2px; }
+.modal-head h2 { font-size: 1.25rem; margin-top: 2px; }
 .modal-body {
   padding: 16px 18px;
   overflow-y: auto; overscroll-behavior: contain;
@@ -32,7 +32,7 @@
   display: flex; gap: 10px; justify-content: space-between; align-items: center;
   background: #141417;
 }
-.foot-hint { font-size: 0.72rem; color: var(--text-2); }
+.foot-hint { font-size: 0.78rem; color: var(--text-2); }
 .foot-actions { display: flex; gap: 8px; }
 
 /* Móvil: sheet inferior, aprovecha el alto */
