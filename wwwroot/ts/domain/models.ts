@@ -10,6 +10,8 @@ export interface Product {
   imageUrl: string;
   description: string;
   stock: number;
+  /** Oculto del catálogo: solo aparece con entradas directas (botón Reservar). */
+  hidden: boolean;
 }
 
 export interface CreateProductDto {
@@ -19,6 +21,7 @@ export interface CreateProductDto {
   imageUrl: string;
   description: string;
   stock: number;
+  hidden: boolean;
 }
 
 export const CATEGORIES: Category[] = ["Consolas", "Videojuegos", "Accesorios", "PC", "Monitores"];

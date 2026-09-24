@@ -11,6 +11,7 @@ function mapRow(r) {
     imageUrl: r.ImageUrl,
     description: r.Description,
     stock: r.Stock,
+    hidden: !!r.Hidden,
   };
 }
 
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
 
   if (req.method === "GET") {
     const { rows } = await pool.query(
-      `SELECT "Id","Name","Price","Category","ImageUrl","Description","Stock" FROM "Products" ORDER BY "Name"`
+      `SELECT "Id","Name","Price","Category","ImageUrl","Description","Stock","Hidden" FROM "Products" ORDER BY "Name"`
     );
     return send(res, 200, rows.map(mapRow));
   }
@@ -48,11 +49,12 @@ export default async function handler(req, res) {
     const name = String(dto.name ?? dto.Name).trim();
     const imageUrl = String(dto.imageUrl ?? dto.ImageUrl ?? "").trim() || `https://placehold.co/600x400/111111/E10600?text=${encodeURIComponent(name)}`;
     const { rows } = await pool.query(
-      `INSERT INTO "Products"("Id","Name","Price","Category","ImageUrl","Description","Stock")
-       VALUES (gen_random_uuid(),$1,$2,$3,$4,$5,$6)
-       RETURNING "Id","Name","Price","Category","ImageUrl","Description","Stock"`,
+      `INSERT INTO "Products"("Id","Name","Price","Category","ImageUrl","Description","Stock","Hidden")
+       VALUES (gen_random_uuid(),$1,$2,$3,$4,$5,$6,$7)
+       RETURNING "Id","Name","Price","Category","ImageUrl","Description","Stock","Hidden"`,
       [name, Number(dto.price ?? dto.Price), category, imageUrl,
-       String(dto.description ?? dto.Description ?? "").trim(), Number(dto.stock ?? dto.Stock ?? 0)]
+       String(dto.description ?? dto.Description ?? "").trim(), Number(dto.stock ?? dto.Stock ?? 0),
+       Boolean(dto.hidden ?? dto.Hidden ?? false)]
     );
     return send(res, 201, mapRow(rows[0]));
   }

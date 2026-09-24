@@ -19,6 +19,7 @@ export function setupAdmin(deps) {
   const fImageFile = getEl("fImageFile");
   const fPreview = getEl("fPreview");
   const fDesc = getEl("fDesc");
+  const fHidden = getEl("fHidden");
   const formError = getEl("formError");
   const imgStatus = document.getElementById("imgStatus");
   let unlocked = false;
@@ -36,7 +37,7 @@ export function setupAdmin(deps) {
     fName.value = ""; fPrice.value = ""; fStock.value = "1";
     fCategory.value = "Consolas";
     fImageUrl.value = ""; fImageFile.value = ""; fileDataUrl = "";
-    fDesc.value = ""; formError.textContent = "";
+    fDesc.value = ""; fHidden.checked = false; formError.textContent = "";
     setImgStatus("");
     syncPreview();
   }
@@ -63,6 +64,7 @@ export function setupAdmin(deps) {
       fileDataUrl = ""; fImageUrl.value = p.imageUrl; fImageFile.value = "";
     }
     fDesc.value = p.description ?? "";
+    fHidden.checked = p.hidden === true;
     setImgStatus("");
     if (modalEyebrow) modalEyebrow.textContent = "Admin · Edición";
     modalTitle.textContent = "Editar producto";
@@ -132,6 +134,7 @@ export function setupAdmin(deps) {
       category: categoryOf(fCategory.value),
       imageUrl: normalizeImageUrl(currentRawUrl()),
       description: fDesc.value.trim(), stock: Math.max(0, Number(fStock.value || 0)),
+      hidden: fHidden.checked,
     });
     const err = validateNewProduct(dto);
     if (err) { formError.textContent = err; return; }
@@ -161,7 +164,8 @@ export function setupAdmin(deps) {
       img.referrerPolicy = "no-referrer";
       img.onerror = () => { img.onerror = null; img.src = `https://placehold.co/600x400/111111/E10600?text=${encodeURIComponent(p.name)}`; };
       row.querySelector("strong").textContent = `${p.name} — ${formatPrice(p.price)}`;
-      row.querySelector(".muted").textContent = `${String(p.category)} • Stock ${p.stock}`;
+      row.querySelector(".muted").textContent =
+        `${String(p.category)} • Stock ${p.stock}${p.hidden ? " • Oculto" : ""}`;
       const actions = row.querySelector(".admin-actions");
       const edit = document.createElement("button");
       edit.className = "btn btn-secondary btn-sm"; edit.textContent = "Editar";

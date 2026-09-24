@@ -23,6 +23,9 @@ const adminPanel = el("adminPanel");
 
 let all: Product[] = [];
 let activeCat = "all";
+// Why: GTA VI (y futuros ocultos) no salen en el catálogo general;
+// solo aparecen al entrar por el botón Reservar.
+let showHidden = false;
 
 const auth = setupAuth({
   onSessionChanged: () => {
@@ -65,16 +68,21 @@ filters.addEventListener("click", (e) => {
   const btn = (e.target as HTMLElement).closest("[data-cat]") as HTMLElement | null;
   if (!btn) return;
   activeCat = btn.dataset.cat ?? "all";
+  showHidden = false;
   filters.querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c === btn));
   paint();
 });
 
-search.addEventListener("input", paint);
+search.addEventListener("input", () => {
+  showHidden = false;
+  paint();
+});
 
-// Anuncio GTA VI: el botón filtra el catálogo y lleva a la ficha de reserva.
+// Anuncio GTA VI: única entrada que muestra productos ocultos.
 document.getElementById("gtaReserveBtn")?.addEventListener("click", () => {
   activeCat = "Videojuegos";
   search.value = "GTA";
+  showHidden = true;
   filters.querySelectorAll(".chip").forEach((c) =>
     c.classList.toggle("active", (c as HTMLElement).dataset.cat === "Videojuegos"));
   paint();
@@ -89,7 +97,8 @@ async function reload(): Promise<void> {
 }
 
 function paint(): void {
-  const items = filterProducts(all, activeCat, search.value);
+  const items = filterProducts(all, activeCat, search.value)
+    .filter((p) => showHidden || !p.hidden);
   const reserved = new Map(getCart().map((l) => [l.id, l.qty] as const));
   renderStore(
     grid,

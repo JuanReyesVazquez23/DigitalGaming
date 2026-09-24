@@ -29,6 +29,9 @@ public sealed class ProductEntity
     /// <summary>Gets or sets the available stock quantity.</summary>
     public int Stock { get; set; }
 
+    /// <summary>Gets or sets a value that indicates whether the product is hidden from the catalog.</summary>
+    public bool Hidden { get; set; }
+
     /// <summary>
     /// Maps a domain product to its entity.
     /// </summary>
@@ -43,11 +46,12 @@ public sealed class ProductEntity
         ImageUrl = p.ImageUrl,
         Description = p.Description,
         Stock = p.Stock,
+        Hidden = p.Hidden,
     };
 
     /// <summary>
     /// Maps the entity to its domain product.
     /// </summary>
     /// <returns>The domain product.</returns>
-    public Product ToDomain() => new(Id, Name, Price, Category, ImageUrl, Description, Stock);
+    public Product ToDomain() => new(Id, Name, Price, Category, ImageUrl, Description, Stock, Hidden);
 }

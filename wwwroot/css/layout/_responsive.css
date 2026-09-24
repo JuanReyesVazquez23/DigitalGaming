@@ -6,19 +6,25 @@ html, body { overflow-x: clip; }
 .grid > *, .topbar-inner > *, .toolbar > *, .admin-head > * { min-width: 0; }
 img { max-width: 100%; }
 
-/* ---------- Teléfonos (≤640px) ---------- */
+/* ---------- Teléfonos (≤640px): aire y separación ---------- */
 @media (max-width: 640px) {
-  /* Ritmo general más aireado */
-  .container { padding: 16px 14px 56px; }
-  .hero { padding: 20px 18px; margin-top: 14px; }
-  .hero-stats { gap: 18px; flex-wrap: wrap; }
-  .toolbar { margin: 18px 0 12px; gap: 10px; }
+  /* Ritmo de página: cada bloque respira */
+  .container { padding: 18px 16px 64px; }
+  .hero { padding: 24px 20px; margin: 14px 0 22px; }
+  .hero-copy { gap: 12px; }
+  .hero-stats { gap: 20px; flex-wrap: wrap; margin-top: 10px; }
+  .gta-banner { margin: 0 0 24px; }
+  .toolbar { margin: 0 0 16px; gap: 12px; }
+  .grid { gap: 22px; }
+  #grid { margin-bottom: 8px; }
+  .admin-panel { margin-top: 28px; }
+  .footer { margin-top: 8px; }
 
   /* Header en dos filas ordenadas: marca + accesos / buscador full.
      Todo puede encogerse y envolverse: nada empuja el ancho. */
-  .topbar-inner { padding: 10px 14px; gap: 10px; }
+  .topbar-inner { padding: 12px 16px; gap: 12px; }
   .brand { flex: 1 1 auto; }
-  .topbar-actions { flex-wrap: wrap; row-gap: 10px; }
+  .topbar-actions { flex-wrap: wrap; row-gap: 12px; }
   .search, .search input { min-width: 0; }
   .admin-bar { flex-wrap: wrap; max-width: 100%; row-gap: 6px; }
   .brand-title { font-size: 1.08rem; }
@@ -34,60 +40,70 @@ img { max-width: 100%; }
   .admin-bar { padding: 4px 5px 4px 9px; }
   .user-name { max-width: 80px; }
 
-  /* Filtros: tira deslizable con snap en vez de amontonarse */
+  /* Filtros: tira deslizable con snap y aire en vez de amontonarse */
   .toolbar { align-items: stretch; flex-direction: column; }
   .filters {
-    flex-wrap: nowrap; overflow-x: auto; gap: 8px;
-    padding: 2px 14px 10px; margin: 0 -14px;
+    flex-wrap: nowrap; overflow-x: auto; gap: 10px;
+    padding: 4px 16px 14px; margin: 0 -16px;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
   .filters::-webkit-scrollbar { display: none; }
-  .chip { flex: none; scroll-snap-align: start; padding: 9px 16px; min-height: 40px; }
-  #countLabel { padding: 0 2px; }
+  .chip { flex: none; scroll-snap-align: start; padding: 10px 18px; min-height: 42px; }
+  #countLabel { padding: 0 4px; margin-top: 2px; }
 
-  /* Cards espaciosas de una columna */
-  .grid { gap: 18px; }
-  .card-body { padding: 16px 16px 17px; gap: 9px; }
+  /* Cards: bloques separados con interior respirable */
+  .card { border-radius: 18px; }
+  .card-body { padding: 18px 18px 19px; gap: 10px; }
   .card-media { aspect-ratio: 16 / 10; }
-  .card-title { font-size: 1.02rem; }
-  .card-desc { font-size: 0.88rem; }
-  .card-foot { padding-top: 12px; }
-  .btn-add { min-height: 46px; font-size: 0.9rem; }
+  .card-title { font-size: 1.04rem; }
+  .card-desc { font-size: 0.88rem; line-height: 1.55; }
+  .card-foot { padding-top: 13px; margin-top: 6px; }
+  .btn-add { min-height: 48px; font-size: 0.92rem; margin-top: 8px; }
   .btn { min-height: 42px; }
 
-  /* Banner GTA: tira compacta legible */
-  .gta-copy { gap: 5px; }
+  /* Banner GTA con aire */
+  .gta-banner { border-radius: 18px; }
+  .gta-copy { gap: 7px; padding: 14px 16px; }
+  .gta-actions { margin-top: 6px; gap: 10px; }
   .gta-actions .btn { min-height: 42px; }
 
   /* Sheet modal con área segura y unidades dinámicas */
   .modal { max-height: 92vh; max-height: 92dvh; }
-  .modal-body { padding: 16px; }
-  .modal-foot { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
-  .field input, .field select, .field textarea { font-size: 16px; padding: 11px; }
+  .modal-head { padding: 18px 18px 15px; }
+  .modal-body { padding: 18px 16px; gap: 18px; }
+  .form-section { gap: 12px; }
+  .field { gap: 7px; }
+  .modal-foot { padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); }
+  .field input, .field select, .field textarea { font-size: 16px; padding: 12px; }
 
-  /* Carrito full + controles táctiles */
-  .cart-head, .cart-body { padding-left: 16px; padding-right: 16px; }
-  .cart-foot { padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); }
+  /* Carrito full con filas separadas */
+  .cart-head { padding: 18px 16px 15px; }
+  .cart-body { padding: 16px; gap: 14px; }
+  .cart-foot { padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); gap: 12px; }
+  .cart-items { gap: 14px; }
+  .cart-item { gap: 12px; padding: 12px; border-radius: 14px; }
   .cart-item { gap: 12px; padding: 10px; }
   .cart-item img { width: 64px; height: 48px; }
   .qty button { width: 30px; height: 30px; font-size: 1rem; }
   #checkoutBtn { min-height: 48px; font-size: 0.95rem; }
 
-  /* Admin apilado y respirable */
-  .admin-panel { padding: 16px; }
-  .admin-head { flex-direction: column; }
-  .admin-row { padding: 12px; }
+  /* Admin: bloques separados y respirables */
+  .admin-panel { padding: 20px 18px; border-radius: 20px; }
+  .admin-head { flex-direction: column; gap: 14px; }
+  .admin-list { gap: 14px; margin-top: 18px; }
+  .admin-row { padding: 14px 12px; border-radius: 14px; }
   .admin-actions .btn { min-height: 42px; }
 
-  /* Órdenes */
-  .order { padding: 12px 13px; }
+  /* Órdenes separadas */
+  .orders-list { gap: 14px; }
+  .order { padding: 14px; gap: 8px; border-radius: 14px; }
 
   /* Toast sobre área segura */
   .toast { bottom: calc(20px + env(safe-area-inset-bottom)); }
 
-  .footer { flex-direction: column; gap: 2px; }
+  .footer { flex-direction: column; gap: 4px; padding: 24px 20px; }
 }
 
 /* ---------- Teléfonos pequeños (≤380px) ---------- */

@@ -21,17 +21,17 @@ export default async function handler(req, res) {
     }
     const imageUrl = String(dto.imageUrl ?? dto.ImageUrl ?? "").trim() || `https://placehold.co/600x400/111111/E10600?text=${encodeURIComponent(name)}`;
     const { rows } = await pool.query(
-      `UPDATE "Products" SET "Name"=$1,"Price"=$2,"Category"=$3,"ImageUrl"=$4,"Description"=$5,"Stock"=$6
-       WHERE "Id"=$7
-       RETURNING "Id","Name","Price","Category","ImageUrl","Description","Stock"`,
+      `UPDATE "Products" SET "Name"=$1,"Price"=$2,"Category"=$3,"ImageUrl"=$4,"Description"=$5,"Stock"=$6,"Hidden"=$7
+       WHERE "Id"=$8
+       RETURNING "Id","Name","Price","Category","ImageUrl","Description","Stock","Hidden"`,
       [name, price, category, imageUrl, String(dto.description ?? dto.Description ?? "").trim(),
-       Math.max(0, Number(dto.stock ?? dto.Stock ?? 0)), id]
+       Math.max(0, Number(dto.stock ?? dto.Stock ?? 0)), Boolean(dto.hidden ?? dto.Hidden ?? false), id]
     );
     if (rows.length === 0) return send(res, 404, { message: "No encontrado." });
     const r = rows[0];
     return send(res, 200, {
       id: r.Id, name: r.Name, price: Number(r.Price), category: categoryToName(r.Category),
-      imageUrl: r.ImageUrl, description: r.Description, stock: r.Stock,
+      imageUrl: r.ImageUrl, description: r.Description, stock: r.Stock, hidden: !!r.Hidden,
     });
   }
 

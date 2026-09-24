@@ -54,6 +54,7 @@ export async function createProduct(dto: CreateProductDto): Promise<Product> {
     imageUrl: dto.imageUrl,
     description: dto.description,
     stock: dto.stock,
+    hidden: dto.hidden,
   };
   try {
     const res = await fetch(API, {
@@ -99,6 +100,7 @@ export async function updateProduct(id: string, dto: CreateProductDto): Promise<
       imageUrl: dto.imageUrl,
       description: dto.description,
       stock: dto.stock,
+      hidden: dto.hidden,
     };
     const exists = current.some((p) => p.id === id);
     writeLocal(exists ? current.map((p) => (p.id === id ? edited : p)) : [edited, ...current]);
@@ -130,6 +132,7 @@ function normalize(p: any): Product {
     imageUrl: String(p.imageUrl ?? p.ImageUrl ?? ""),
     description: String(p.description ?? p.Description ?? ""),
     stock: Number(p.stock ?? p.Stock ?? 0),
+    hidden: Boolean(p.hidden ?? p.Hidden ?? false),
   };
 }
 

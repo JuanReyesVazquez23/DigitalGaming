@@ -44,6 +44,12 @@ public sealed record Product
     public int Stock { get; init; }
 
     /// <summary>
+    /// Gets a value that indicates whether the product is hidden from the catalog.
+    /// </summary>
+    /// <remarks>Hidden products only show through direct entry points (e.g. the GTA VI reserve button).</remarks>
+    public bool Hidden { get; init; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Product"/> class.
     /// </summary>
     /// <param name="id">The unique product identifier.</param>
@@ -53,7 +59,8 @@ public sealed record Product
     /// <param name="imageUrl">The product image URL or base64 data URI.</param>
     /// <param name="description">The product short description.</param>
     /// <param name="stock">The available stock quantity.</param>
-    public Product(Guid id, string name, decimal price, Category category, string imageUrl, string description, int stock)
+    /// <param name="hidden">Whether the product is hidden from the catalog.</param>
+    public Product(Guid id, string name, decimal price, Category category, string imageUrl, string description, int stock, bool hidden = false)
     {
         Id = id;
         Name = name;
@@ -62,5 +69,6 @@ public sealed record Product
         ImageUrl = imageUrl;
         Description = description;
         Stock = stock;
+        Hidden = hidden;
     }
 }

@@ -33,6 +33,7 @@ export async function createProduct(dto) {
     id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
     name: dto.name, price: dto.price, category: dto.category,
     imageUrl: dto.imageUrl, description: dto.description, stock: dto.stock,
+    hidden: dto.hidden,
   };
   try {
     const res = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify(dto) });
@@ -58,7 +59,7 @@ export async function updateProduct(id, dto) {
   } catch (e) {
     if (e instanceof Error && e.message === "NO_AUTH") throw e;
     const current = readLocal();
-    const edited = { id, name: dto.name, price: dto.price, category: dto.category, imageUrl: dto.imageUrl, description: dto.description, stock: dto.stock };
+    const edited = { id, name: dto.name, price: dto.price, category: dto.category, imageUrl: dto.imageUrl, description: dto.description, stock: dto.stock, hidden: dto.hidden };
     const exists = current.some((p) => p.id === id);
     writeLocal(exists ? current.map((p) => (p.id === id ? edited : p)) : [edited, ...current]);
     return edited;
@@ -84,6 +85,7 @@ function normalize(p) {
     imageUrl: String(p.imageUrl ?? p.ImageUrl ?? ""),
     description: String(p.description ?? p.Description ?? ""),
     stock: Number(p.stock ?? p.Stock ?? 0),
+    hidden: Boolean(p.hidden ?? p.Hidden ?? false),
   };
 }
 function mapCategory(raw) {

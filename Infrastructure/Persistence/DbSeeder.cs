@@ -30,6 +30,7 @@ public static class DbSeeder
                 ImageUrl = "./assets/gta6.jpg",
                 Description = "Reserva el GTA VI y no te quedes sin el juego más esperado de la historia. Apartado con RD$4,950, válido para PS5 y Xbox Series.",
                 Stock = 50,
+                Hidden = true,
             });
         }
 

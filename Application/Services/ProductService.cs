@@ -42,7 +42,8 @@ public sealed class ProductService(IProductRepository repository) : IProductServ
             dto.Category,
             image,
             dto.Description?.Trim() ?? string.Empty,
-            Math.Max(0, dto.Stock));
+            Math.Max(0, dto.Stock),
+            dto.Hidden);
 
         return _repository.AddAsync(product, cancellationToken);
     }
@@ -95,6 +96,7 @@ public sealed class ProductService(IProductRepository repository) : IProductServ
             ImageUrl = image,
             Description = dto.Description?.Trim() ?? string.Empty,
             Stock = Math.Max(0, dto.Stock),
+            Hidden = dto.Hidden,
         };
 
         return await _repository.UpdateAsync(updated, cancellationToken).ConfigureAwait(false);

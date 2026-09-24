@@ -20,6 +20,7 @@ const tapHint = el("tapHint");
 const adminPanel = el("adminPanel");
 let all = [];
 let activeCat = "all";
+let showHidden = false;
 const auth = setupAuth({ onSessionChanged: () => {
   cart.renderCart(); void reload();
   if (getSession()) {
@@ -47,13 +48,15 @@ filters.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-cat]");
   if (!btn) return;
   activeCat = btn.dataset.cat ?? "all";
+  showHidden = false;
   filters.querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c === btn));
   paint();
 });
-search.addEventListener("input", paint);
+search.addEventListener("input", () => { showHidden = false; paint(); });
 document.getElementById("gtaReserveBtn")?.addEventListener("click", () => {
   activeCat = "Videojuegos";
   search.value = "GTA";
+  showHidden = true;
   filters.querySelectorAll(".chip").forEach((c) =>
     c.classList.toggle("active", c.dataset.cat === "Videojuegos"));
   paint();
@@ -66,7 +69,8 @@ async function reload() {
   cart.renderCart();
 }
 function paint() {
-  const items = filterProducts(all, activeCat, search.value);
+  const items = filterProducts(all, activeCat, search.value)
+    .filter((p) => showHidden || !p.hidden);
   const reserved = new Map(getCart().map((l) => [l.id, l.qty]));
   renderStore(grid, empty, count, items, (id) => {
     addToCart(id);

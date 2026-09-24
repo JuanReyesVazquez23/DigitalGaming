@@ -96,3 +96,28 @@ BEGIN
 END $EF$;
 COMMIT;
 
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260924212206_ProductHidden') THEN
+    ALTER TABLE "Products" ADD "Hidden" boolean NOT NULL DEFAULT FALSE;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260924212206_ProductHidden') THEN
+    UPDATE "Products" SET "Hidden" = TRUE WHERE "Name" = 'GTA VI — Reserva preventa'
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260924212206_ProductHidden') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260924212206_ProductHidden', '10.0.12');
+    END IF;
+END $EF$;
+COMMIT;
+

@@ -43,4 +43,9 @@ public sealed record UpdateProductDto
     /// </summary>
     [Range(0, 100_000)]
     public int Stock { get; init; }
+
+    /// <summary>
+    /// Gets a value that indicates whether the product is hidden from the catalog.
+    /// </summary>
+    public bool Hidden { get; init; }
 }

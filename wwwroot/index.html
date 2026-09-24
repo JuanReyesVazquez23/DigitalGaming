@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./css/main.css?v=8" />
+  <link rel="stylesheet" href="./css/main.css?v=11" />
   <link rel="icon" href="./assets/brand/favicon.svg" type="image/svg+xml" />
   <link rel="alternate icon" href="./assets/brand/favicon.ico" />
   <link rel="icon" href="./assets/brand/favicon-32x32.png" sizes="32x32" type="image/png" />
@@ -164,6 +164,10 @@
             <label for="fDesc">Descripción</label>
             <textarea id="fDesc" rows="2" maxlength="500" placeholder="Detalles, garantía, entrega en RD..."></textarea>
           </div>
+          <div class="field field-check">
+            <input id="fHidden" type="checkbox" />
+            <label for="fHidden">Ocultar del catálogo (solo aparece con entradas directas, como Reservar)</label>
+          </div>
         </div>
         <div class="form-section">
           <h3>2 · Imagen</h3>
@@ -196,8 +200,8 @@
   </div>
 
   <!-- DG_API_URL: en Vercel se genera desde la env API_URL; en local es "" (mismo origen). -->
-  <script src="./js/config.js?v=6"></script>
-  <script type="module" src="./js/app.js?v=6"></script>
+  <script src="./js/config.js?v=11"></script>
+  <script type="module" src="./js/app.js?v=11"></script>
 
   <!-- Modal sesión: entrar o crear cuenta (para comprar) -->
   <div id="authBackdrop" class="modal-backdrop">

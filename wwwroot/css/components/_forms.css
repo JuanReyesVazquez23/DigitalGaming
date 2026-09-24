@@ -13,6 +13,9 @@
 }
 .field textarea { resize: vertical; min-height: 52px; }
 .field input[type="file"] { padding: 7px 10px; font-size: 0.8rem; color: var(--text-2); }
+.field-check { grid-template-columns: auto 1fr; align-items: start; gap: 9px; }
+.field-check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--red-500); }
+.field-check label { font-weight: 500; }
 .field input:focus, .field select:focus, .field textarea:focus {
   outline: none; border-color: var(--red-600); box-shadow: 0 0 0 3px var(--red-glow);
 }
