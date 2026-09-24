@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./css/main.css?v=11" />
+  <link rel="stylesheet" href="./css/main.css?v=12" />
   <link rel="icon" href="./assets/brand/favicon.svg" type="image/svg+xml" />
   <link rel="alternate icon" href="./assets/brand/favicon.ico" />
   <link rel="icon" href="./assets/brand/favicon-32x32.png" sizes="32x32" type="image/png" />
@@ -76,9 +76,15 @@
         <h2>Reserva el <span>GTA VI</span></h2>
         <p class="gta-lede">No te quedes sin <strong>el juego más esperado de la historia</strong>. Aparta tu copia hoy y recíbela el día del lanzamiento, con envío a todo el país.</p>
         <p class="gta-price"><strong>RD$4,950</strong><span>apartado · PS5 y Xbox Series</span></p>
+        <div id="gtaCountdown" class="gta-countdown" aria-label="Cuenta regresiva para el lanzamiento">
+          <div><strong id="cdDays">--</strong><span>Días</span></div>
+          <div><strong id="cdHours">--</strong><span>Hrs</span></div>
+          <div><strong id="cdMins">--</strong><span>Min</span></div>
+          <div><strong id="cdSecs">--</strong><span>Seg</span></div>
+        </div>
+        <p id="gtaLive" class="gta-live" hidden>¡Ya disponible en tienda! 🎮</p>
         <div class="gta-actions">
           <button id="gtaReserveBtn" class="btn btn-primary">Reservar el mío</button>
-          <a href="#grid" class="btn btn-ghost" style="text-decoration:none; display:inline-block">Ver en catálogo</a>
         </div>
         <p class="gta-note">Cupos limitados por tienda. El apartado se descuenta del precio final.</p>
         <p class="gta-credit">Arte oficial © Rockstar Games · Imagen con fines ilustrativos.</p>
@@ -200,8 +206,8 @@
   </div>
 
   <!-- DG_API_URL: en Vercel se genera desde la env API_URL; en local es "" (mismo origen). -->
-  <script src="./js/config.js?v=11"></script>
-  <script type="module" src="./js/app.js?v=11"></script>
+  <script src="./js/config.js?v=12"></script>
+  <script type="module" src="./js/app.js?v=12"></script>
 
   <!-- Modal sesión: entrar o crear cuenta (para comprar) -->
   <div id="authBackdrop" class="modal-backdrop">

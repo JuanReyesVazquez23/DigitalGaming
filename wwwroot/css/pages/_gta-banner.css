@@ -37,8 +37,25 @@
 .gta-price { display: flex; align-items: baseline; gap: 8px; }
 .gta-price strong { font-family: var(--font-display); font-size: 1.02rem; font-variant-numeric: tabular-nums; }
 .gta-price span { font-size: 0.72rem; color: var(--text-2); }
-.gta-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+.gta-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
 .gta-actions .btn { padding: 7px 13px; font-size: 0.78rem; }
+.gta-countdown { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.gta-countdown > div {
+  background: rgba(0, 0, 0, 0.45); border: 1px solid var(--line);
+  border-radius: 10px; padding: 6px 12px; text-align: center; min-width: 62px;
+}
+.gta-countdown strong {
+  display: block; font-family: var(--font-display); font-size: 1.1rem;
+  font-variant-numeric: tabular-nums; color: #fff;
+}
+.gta-countdown span { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-2); }
+.gta-live { color: var(--red-ink); font-weight: 700; }
+.gta-live[hidden] { display: none; }
+
+@media (max-width: 640px) {
+  .gta-countdown > div { min-width: 0; flex: 1; padding: 5px 6px; }
+  .gta-countdown strong { font-size: 0.95rem; }
+}
 .gta-note { display: none; }
 .gta-credit { font-size: 0.64rem; color: var(--text-2); opacity: 0.8; }
 

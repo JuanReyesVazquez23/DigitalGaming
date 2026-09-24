@@ -7,6 +7,7 @@ import { renderStore } from "./ui/store-renderer.js";
 import { setupAdmin } from "./ui/admin-controller.js";
 import { setupAuth } from "./ui/auth-controller.js";
 import { setupCart, toast } from "./ui/cart-drawer.js";
+import { setupCountdown } from "./ui/countdown.js";
 import { setupOrders } from "./ui/orders-controller.js";
 import { setupTapUnlock } from "./ui/tap-unlock.js";
 import type { Product } from "./domain/models.js";
@@ -78,16 +79,28 @@ search.addEventListener("input", () => {
   paint();
 });
 
-// Anuncio GTA VI: única entrada que muestra productos ocultos.
+// Anuncio GTA VI: Reservar aparta el juego directo al carrito.
 document.getElementById("gtaReserveBtn")?.addEventListener("click", () => {
-  activeCat = "Videojuegos";
-  search.value = "GTA";
+  const gta = all.find((p) => /gta/i.test(p.name)) ?? all.find((p) => p.hidden);
+  if (!gta) {
+    toast("La reserva no está disponible ahora mismo.");
+    return;
+  }
+  const inCart = getCart().find((l) => l.id === gta.id)?.qty ?? 0;
+  if (gta.stock - inCart <= 0) {
+    toast(`Sin stock de "${gta.name}" por ahora.`);
+    return;
+  }
   showHidden = true;
-  filters.querySelectorAll(".chip").forEach((c) =>
-    c.classList.toggle("active", (c as HTMLElement).dataset.cat === "Videojuegos"));
+  addToCart(gta.id);
+  cart.renderCart();
   paint();
-  grid.scrollIntoView({ behavior: "smooth", block: "start" });
+  toast(`Agregado: ${gta.name} 🛒`);
+  cart.openCart();
 });
+
+// Lanzamiento GTA VI: 19 de noviembre de 2026 (hora RD).
+setupCountdown("2026-11-19T04:00:00Z");
 
 async function reload(): Promise<void> {
   all = await fetchProducts();
