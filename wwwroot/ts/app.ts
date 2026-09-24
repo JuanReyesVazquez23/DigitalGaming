@@ -47,6 +47,7 @@ const cart = setupCart({
   onCheckoutDone: reload,
   requireAuth: (notice) => auth.openAuth("login", notice),
   onCartChanged: paint,
+  refreshCatalog: reload,
 });
 
 setupOrders({

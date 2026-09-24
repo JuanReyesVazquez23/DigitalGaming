@@ -10,6 +10,8 @@ interface CartDeps {
   requireAuth: (notice: string) => void;
   /** Repinta la tienda (stock en vivo) cuando cambia el carrito. */
   onCartChanged: () => void;
+  /** Recarga el catálogo del servidor (para depurar el carrito antes de pagar). */
+  refreshCatalog: () => Promise<void>;
 }
 
 export function setupCart(deps: CartDeps): {
@@ -103,12 +105,29 @@ export function setupCart(deps: CartDeps): {
       deps.requireAuth("Para comprar necesitas entrar con tu cuenta. Si no tienes, crea una en segundos.");
       return;
     }
+    // Why revalidar acá y no solo en el servidor: si algo del carrito ya no existe
+    // (caché vieja, otro reinicio), se quita con aviso en vez de fallar la compra.
     const lines = orderLinesFor(getCart(), deps.getCatalog());
-    if (lines.length === 0) return;
     errorEl.textContent = "";
     checkoutBtn.disabled = true;
     try {
-      const order = await checkout(lines, session.token);
+      await deps.refreshCatalog();
+      const fresh = deps.getCatalog();
+      const cart = getCart();
+      const dropped = cart.filter((l) => !fresh.some((p) => p.id === l.id));
+      for (const l of dropped) removeFromCart(l.id);
+      const valid = orderLinesFor(getCart(), fresh);
+      if (dropped.length > 0) {
+        renderCart();
+        deps.onCartChanged();
+        toast(`Se quitó del carrito lo que ya no está disponible (${dropped.length}).`);
+      }
+      if (valid.length === 0) {
+        if (lines.length === 0 && dropped.length === 0) return; // carrito ya vacío
+        errorEl.textContent = "Tu carrito quedó vacío: esos productos ya no están disponibles.";
+        return;
+      }
+      const order = await checkout(valid, session.token);
       clearCart();
       renderCart();
       closeCart();

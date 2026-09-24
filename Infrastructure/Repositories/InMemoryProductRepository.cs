@@ -75,6 +75,7 @@ public sealed class InMemoryProductRepository : IProductRepository
     private static IEnumerable<Product> Seed()
     {
         // Catálogo inicial: solo la preventa de GTA VI. El resto lo crea el admin.
-        yield return new Product(Guid.NewGuid(), "GTA VI — Reserva preventa", 4950, Category.Videojuegos, "./assets/gta6.jpg", "Reserva el GTA VI y no te quedes sin el juego más esperado de la historia. Apartado con RD$4,950, válido para PS5 y Xbox Series.", 50, true);
+        // Why GUID fijo: cada reinicio generaba otro Id y rompía carritos/cachés guardados.
+        yield return new Product(Guid.Parse("6f1e3a2b-8c4d-4e5f-9a6b-3c7d8e9f0a1b"), "GTA VI — Reserva preventa", 4950, Category.Videojuegos, "./assets/gta6.jpg", "Reserva el GTA VI y no te quedes sin el juego más esperado de la historia. Apartado con RD$4,950, válido para PS5 y Xbox Series.", 50, true);
     }
 }

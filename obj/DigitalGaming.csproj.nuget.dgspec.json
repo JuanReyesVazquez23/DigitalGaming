@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\DigitalGaming.csproj": {}
+    "C:\\Users\\jeanx\\Downloads\\DigitalGaming\\DigitalGaming.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\DigitalGaming.csproj": {
+    "C:\\Users\\jeanx\\Downloads\\DigitalGaming\\DigitalGaming.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\DigitalGaming.csproj",
+        "projectUniqueName": "C:\\Users\\jeanx\\Downloads\\DigitalGaming\\DigitalGaming.csproj",
         "projectName": "DigitalGaming",
-        "projectPath": "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\DigitalGaming.csproj",
+        "projectPath": "C:\\Users\\jeanx\\Downloads\\DigitalGaming\\DigitalGaming.csproj",
         "packagesPath": "C:\\Users\\jeanx\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\obj\\",
+        "outputPath": "C:\\Users\\jeanx\\Downloads\\DigitalGaming\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jeanx\\AppData\\Roaming\\NuGet\\NuGet.Config"

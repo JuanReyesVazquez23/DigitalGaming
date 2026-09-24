@@ -2,8 +2,9 @@
 -- Idempotente: solo inserta si no existe.
 
 -- GTA VI preventa (único producto inicial, oculto: solo sale con el botón Reservar)
+-- Id fijo para que sea estable entre entornos.
 INSERT INTO "Products"("Id","Name","Price","Category","ImageUrl","Description","Stock","Hidden")
-SELECT gen_random_uuid(),
+SELECT '6f1e3a2b-8c4d-4e5f-9a6b-3c7d8e9f0a1b',
        'GTA VI — Reserva preventa',
        4950,
        1,

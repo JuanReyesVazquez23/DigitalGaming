@@ -61,11 +61,26 @@ export function setupCart(deps) {
       return;
     }
     const lines = orderLinesFor(getCart(), deps.getCatalog());
-    if (lines.length === 0) return;
     errorEl.textContent = "";
     checkoutBtn.disabled = true;
     try {
-      const order = await checkout(lines, session.token);
+      await deps.refreshCatalog();
+      const fresh = deps.getCatalog();
+      const cart = getCart();
+      const dropped = cart.filter((l) => !fresh.some((p) => p.id === l.id));
+      for (const l of dropped) removeFromCart(l.id);
+      const valid = orderLinesFor(getCart(), fresh);
+      if (dropped.length > 0) {
+        renderCart();
+        deps.onCartChanged();
+        toast(`Se quitó del carrito lo que ya no está disponible (${dropped.length}).`);
+      }
+      if (valid.length === 0) {
+        if (lines.length === 0 && dropped.length === 0) return;
+        errorEl.textContent = "Tu carrito quedó vacío: esos productos ya no están disponibles.";
+        return;
+      }
+      const order = await checkout(valid, session.token);
       clearCart();
       renderCart();
       closeCart();

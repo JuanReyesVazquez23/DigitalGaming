@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "M+eM9XpV6e0=",
+  "dgSpecHash": "8AgPEb14b8I=",
   "success": true,
-  "projectFilePath": "C:\\Users\\jeanx\\Downloads\\DigitalMarket\\DigitalGaming.csproj",
+  "projectFilePath": "C:\\Users\\jeanx\\Downloads\\DigitalGaming\\DigitalGaming.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jeanx\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\jeanx\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\10.0.12\\microsoft.aspnetcore.authentication.jwtbearer.10.0.12.nupkg.sha512",

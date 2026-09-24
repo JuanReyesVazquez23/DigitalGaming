@@ -23,7 +23,8 @@ public static class DbSeeder
         {
             db.Products.Add(new ProductEntity
             {
-                Id = Guid.NewGuid(),
+                // Why GUID fijo: mismo Id en todos los entornos/reinicios.
+                Id = Guid.Parse("6f1e3a2b-8c4d-4e5f-9a6b-3c7d8e9f0a1b"),
                 Name = "GTA VI — Reserva preventa",
                 Price = 4950,
                 Category = Category.Videojuegos,
