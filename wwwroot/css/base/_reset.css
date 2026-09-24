@@ -5,7 +5,9 @@ html, body { height: 100%; }
 html { scroll-behavior: smooth; }
 body {
   background: var(--bg-0); color: var(--text-0);
-  font-family: var(--font-body); font-size: 17px; line-height: 1.65;
+  font-family: var(--font-body); font-size: 19px; line-height: 1.7;
+  /* La Arcade Classic junta mucho las palabras: aire global entre letras y palabras. */
+  letter-spacing: 0.03em; word-spacing: 0.16em;
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
 }
 body.modal-open { overflow: hidden; }
