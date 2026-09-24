@@ -1,7 +1,8 @@
-/* Layer: base/typography — Sora para titulares, Inter para cuerpo. */
-h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; line-height: 1.2; font-weight: 700; }
+/* Layer: base/typography — Gameshow para la marca, Arcade Classic para todo lo demás. */
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: 0.02em; line-height: 1.25; font-weight: 700; }
 .brand-title {
-  font-size: 1.25rem; font-weight: 800; letter-spacing: 0.04em;
+  font-family: var(--font-brand);
+  font-size: 1.5rem; font-weight: 400; letter-spacing: 0.06em;
   cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
 }
 .brand-title .accent { color: var(--red-500); }

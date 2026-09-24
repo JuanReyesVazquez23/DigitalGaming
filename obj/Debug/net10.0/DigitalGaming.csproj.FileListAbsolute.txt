@@ -136,7 +136,6 @@ C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\glkqwka6jj-{
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\tcwxqyroc7-{0}-7364augjrb-7364augjrb.gz
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\wh9mmy7mfg-{0}-qzklr6fxkm-qzklr6fxkm.gz
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\j9993vnck3-{0}-h4hci36k76-h4hci36k76.gz
-C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\c6lnfbn3cr-{0}-ux50lehklo-ux50lehklo.gz
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\bd0wrj3cn0-{0}-5ae2vxwoof-5ae2vxwoof.gz
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\vmtw3lmoor-{0}-w9tlfgn3ae-w9tlfgn3ae.gz
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\fwf3kul1jl-{0}-epuloxbou3-epuloxbou3.gz
@@ -167,7 +166,9 @@ C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\ref\DigitalGaming.dll
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\ryf6xmuwry-{0}-vmnei9zulq-vmnei9zulq.gz
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\25o17re7cq-{0}-td724z1rh8-td724z1rh8.gz
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\0lcvyklj7f-{0}-3lzvk2vmo7-3lzvk2vmo7.gz
-C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\bldaeqqzfv-{0}-8r534caac6-8r534caac6.gz
-C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\9u8ttzquuq-{0}-jlc2g0z2s7-jlc2g0z2s7.gz
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\sd05evj4d3-{0}-ulhkjoxnyv-ulhkjoxnyv.gz
 C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\2apw8gkakf-{0}-v8vj8723yj-v8vj8723yj.gz
+C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\c6lnfbn3cr-{0}-0h14e5psxq-0h14e5psxq.gz
+C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\bldaeqqzfv-{0}-gvhkomqn16-gvhkomqn16.gz
+C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\9u8ttzquuq-{0}-iwizvyay6j-iwizvyay6j.gz
+C:\Users\jeanx\Downloads\DigitalMarket\obj\Debug\net10.0\compressed\2tv0emnfn4-{0}-ofxug9b0i4-ofxug9b0i4.gz
