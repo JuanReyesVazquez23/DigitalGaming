@@ -17,11 +17,38 @@ public sealed class ProductsController(IProductService service) : ControllerBase
     private readonly IProductService _service = service ?? throw new ArgumentNullException(nameof(service));
 
     /// <summary>
-    /// Gets the full product catalog.
+    /// Gets one catalog window by displacement (offset/limit), CDN-cacheable.
+    /// </summary>
+    /// <param name="limit">The window size.</param>
+    /// <param name="offset">The displacement from the start.</param>
+    /// <param name="category">The category name filter.</param>
+    /// <param name="q">The text search.</param>
+    /// <param name="includeHidden">Whether to include hidden products.</param>
+    /// <param name="ct">The cancellation token.</param>
+    /// <returns>The requested window.</returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(PagedResult<Product>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResult<Product>>> GetPaged(
+        [FromQuery] int limit = 12,
+        [FromQuery] int offset = 0,
+        [FromQuery] string? category = null,
+        [FromQuery] string? q = null,
+        [FromQuery] bool includeHidden = false,
+        CancellationToken ct = default)
+    {
+        // Why caché CDN: el catálogo es público e igual para todos; cada URL
+        // (con su querystring) se cachea 60s con revalidación de fondo.
+        Response.Headers.CacheControl = "public, s-maxage=60, stale-while-revalidate=300";
+        var page = await _service.GetPagedAsync(limit, offset, category, q, includeHidden, ct).ConfigureAwait(false);
+        return Ok(page);
+    }
+
+    /// <summary>
+    /// Gets the full product catalog (admin/lists).
     /// </summary>
     /// <param name="ct">The cancellation token.</param>
     /// <returns>The list of products.</returns>
-    [HttpGet]
+    [HttpGet("all")]
     [ProducesResponseType(typeof(IReadOnlyList<Product>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<Product>>> GetAll(CancellationToken ct)
     {

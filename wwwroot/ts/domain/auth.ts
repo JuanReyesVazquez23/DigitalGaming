@@ -1,6 +1,7 @@
-// Layer: ts/domain/auth — sesión JWT y líneas del carrito.
+// Layer: ts/domain/auth — sesión (access corto + refresh rotativo) y carrito.
 export interface Session {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   username: string;
   expiresAtUtc: string;
 }

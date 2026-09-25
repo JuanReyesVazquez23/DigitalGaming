@@ -127,7 +127,7 @@ export function setupCart(deps: CartDeps): {
         errorEl.textContent = "Tu carrito quedó vacío: esos productos ya no están disponibles.";
         return;
       }
-      const order = await checkout(valid, session.token);
+      const order = await checkout(valid);
       clearCart();
       renderCart();
       closeCart();

@@ -15,7 +15,8 @@ export function jwtOpts() {
   return {
     issuer: process.env.JWT_ISSUER || "DigitalGaming",
     audience: process.env.JWT_AUDIENCE || "DigitalGaming",
-    expiresIn: "12h",
+    accessExpiryMinutes: Number(process.env.JWT_ACCESS_MINUTES || 15),
+    refreshDays: Number(process.env.JWT_REFRESH_DAYS || 30),
   };
 }
 
@@ -58,10 +59,26 @@ export function signToken(user) {
   const token = jwt.sign(
     { sub: user.id, unique_name: user.username, name: user.username, role: user.role },
     jwtKey(),
-    { issuer: o.issuer, audience: o.audience, expiresIn: o.expiresIn, jwtid: crypto.randomUUID() }
+    { issuer: o.issuer, audience: o.audience, expiresIn: `${Math.max(5, o.accessExpiryMinutes)}m`, jwtid: crypto.randomUUID() }
   );
   const decoded = jwt.decode(token);
   return { token, expiresAtUtc: new Date(decoded.exp * 1000).toISOString() };
+}
+
+/** Token opaco + su hash SHA256 hex (solo el hash se guarda). */
+export function newRefreshToken() {
+  const opaque = crypto.randomBytes(64).toString("base64");
+  const hash = crypto.createHash("sha256").update(opaque, "utf8").digest("hex");
+  return { opaque, hash };
+}
+
+export function sha256hex(value) {
+  return crypto.createHash("sha256").update(value, "utf8").digest("hex");
+}
+
+export function refreshExpiresAt() {
+  const o = jwtOpts();
+  return new Date(Date.now() + Math.max(1, o.refreshDays) * 86_400_000).toISOString();
 }
 
 /** Usuario del Bearer o null (token ausente/inválido/vencido). */

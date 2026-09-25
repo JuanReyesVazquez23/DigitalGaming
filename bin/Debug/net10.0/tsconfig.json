@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ES2020",
+    "module": "NodeNext",
     "strict": true,
     "outDir": "./wwwroot/js",
     "rootDir": "./wwwroot/ts",
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "sourceMap": true
   },
   "include": ["wwwroot/ts/**/*"]

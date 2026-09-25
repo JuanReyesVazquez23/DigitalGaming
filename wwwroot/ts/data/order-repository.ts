@@ -1,7 +1,8 @@
-// Layer: ts/data/order-repository — compra (requiere JWT).
+// Layer: ts/data/order-repository — compra (requiere JWT, con refresh automático).
 import type { CheckoutLine } from "../domain/auth.js";
 import type { Product } from "../domain/models.js";
 import { api } from "../services/api-config.js";
+import { authFetch } from "./auth-fetch.js";
 
 const API = api("/api/orders");
 
@@ -15,13 +16,12 @@ export interface PlacedOrderFull extends PlacedOrder {
   createdAtUtc: string;
 }
 
-export async function checkout(lines: CheckoutLine[], token: string): Promise<PlacedOrder> {
-  const res = await fetch(API, {
+export async function checkout(lines: CheckoutLine[]): Promise<PlacedOrder> {
+  const res = await authFetch(API, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ items: lines }),
   });
-  if (res.status === 401) throw new Error("NO_AUTH");
   if (!res.ok) {
     let msg = "No se pudo completar la compra.";
     try {
@@ -55,11 +55,8 @@ export function orderLinesFor(
     .map((l) => ({ productId: l.id, quantity: l.qty }));
 }
 
-export async function mine(token: string): Promise<PlacedOrderFull[]> {
-  const res = await fetch(`${API}/mine`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (res.status === 401) throw new Error("NO_AUTH");
+export async function mine(): Promise<PlacedOrderFull[]> {
+  const res = await authFetch(`${API}/mine`);
   if (!res.ok) throw new Error("No se pudo cargar el historial.");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const arr = (await res.json()) as any[];

@@ -121,3 +121,43 @@ BEGIN
 END $EF$;
 COMMIT;
 
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260925001503_RefreshTokens') THEN
+    CREATE TABLE "RefreshTokens" (
+        "Id" uuid NOT NULL,
+        "UserId" uuid NOT NULL,
+        "TokenHash" character varying(128) NOT NULL,
+        "CreatedAtUtc" timestamp with time zone NOT NULL,
+        "ExpiresAtUtc" timestamp with time zone NOT NULL,
+        "RevokedAtUtc" timestamp with time zone,
+        CONSTRAINT "PK_RefreshTokens" PRIMARY KEY ("Id")
+    );
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260925001503_RefreshTokens') THEN
+    CREATE UNIQUE INDEX "IX_RefreshTokens_TokenHash" ON "RefreshTokens" ("TokenHash");
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260925001503_RefreshTokens') THEN
+    CREATE INDEX "IX_RefreshTokens_UserId" ON "RefreshTokens" ("UserId");
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260925001503_RefreshTokens') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260925001503_RefreshTokens', '10.0.12');
+    END IF;
+END $EF$;
+COMMIT;
+

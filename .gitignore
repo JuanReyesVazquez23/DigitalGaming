@@ -1,0 +1,17 @@
+# Deps
+node_modules/
+
+# JS generado por tsc (fuente real: wwwroot/ts/). Se regenera con `npm run build`.
+# Se exceptúa config.js: default local commiteado, regenerado en Vercel.
+wwwroot/js/**/*.js
+wwwroot/js/**/*.js.map
+!wwwroot/js/config.js
+
+# Build .NET
+bin/
+obj/
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vs/

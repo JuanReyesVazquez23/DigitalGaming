@@ -1,6 +1,5 @@
 // Layer: ts/app — composición (entry point). Une domain/data/services/ui.
-import { fetchProducts } from "./data/product-repository.js";
-import { filterProducts } from "./services/product-service.js";
+import { fetchPage, fetchProducts } from "./data/product-repository.js";
 import { addToCart, getCart } from "./services/cart-store.js";
 import { getSession } from "./services/session-store.js";
 import { renderStore } from "./ui/store-renderer.js";
@@ -10,11 +9,14 @@ import { setupCart, toast } from "./ui/cart-drawer.js";
 import { setupCountdown } from "./ui/countdown.js";
 import { setupOrders } from "./ui/orders-controller.js";
 import { setupTapUnlock } from "./ui/tap-unlock.js";
-import type { Product } from "./domain/models.js";
+import type { PagedResult, Product } from "./domain/models.js";
 
 const grid = el("grid");
 const empty = el("emptyState");
 const count = el("countLabel");
+const pageLabel = el("pageLabel");
+const prevBtn = el("prevPage") as HTMLButtonElement;
+const nextBtn = el("nextPage") as HTMLButtonElement;
 const statTotal = document.getElementById("statTotal");
 const search = el("searchInput") as HTMLInputElement;
 const filters = el("filters");
@@ -27,6 +29,10 @@ let activeCat = "all";
 // Why: GTA VI (y futuros ocultos) no salen en el catálogo general;
 // solo aparecen al entrar por el botón Reservar.
 let showHidden = false;
+// Paginación por desplazamiento (el CDN cachea cada ventana).
+const PAGE_SIZE = 8;
+let page = 1;
+let pageResult: PagedResult<Product> = { items: [], total: 0, limit: PAGE_SIZE, offset: 0 };
 
 const auth = setupAuth({
   onSessionChanged: () => {
@@ -71,13 +77,15 @@ filters.addEventListener("click", (e) => {
   if (!btn) return;
   activeCat = btn.dataset.cat ?? "all";
   showHidden = false;
+  page = 1;
   filters.querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c === btn));
-  paint();
+  void loadPage();
 });
 
 search.addEventListener("input", () => {
   showHidden = false;
-  paint();
+  page = 1;
+  void loadPage();
 });
 
 // Anuncio GTA VI: Reservar aparta el juego directo al carrito.
@@ -100,19 +108,58 @@ document.getElementById("gtaReserveBtn")?.addEventListener("click", () => {
   cart.openCart();
 });
 
+prevBtn.addEventListener("click", () => {
+  if (page <= 1) return;
+  page -= 1;
+  void loadPage(true);
+});
+
+nextBtn.addEventListener("click", () => {
+  if (page >= totalPages()) return;
+  page += 1;
+  void loadPage(true);
+});
+
 // Lanzamiento GTA VI: 19 de noviembre de 2026 (hora RD).
 setupCountdown("2026-11-19T04:00:00Z");
 
 async function reload(): Promise<void> {
   all = await fetchProducts();
-  paint();
   admin.renderAdminList(all);
   cart.renderCart();
+  await loadPage();
+}
+
+/** Pide la ventana actual (offset/limit) y pinta. */
+async function loadPage(scroll = false): Promise<void> {
+  pageResult = await fetchPage({
+    limit: PAGE_SIZE,
+    offset: (page - 1) * PAGE_SIZE,
+    category: activeCat,
+    query: search.value,
+    includeHidden: showHidden,
+  });
+  // Why clamp: si el total encogió (borrado), la página pedida puede quedar vacía.
+  if (pageResult.items.length === 0 && pageResult.total > 0 && page > 1) {
+    page = totalPages();
+    pageResult = await fetchPage({
+      limit: PAGE_SIZE,
+      offset: (page - 1) * PAGE_SIZE,
+      category: activeCat,
+      query: search.value,
+      includeHidden: showHidden,
+    });
+  }
+  paint();
+  if (scroll) grid.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function totalPages(): number {
+  return Math.max(1, Math.ceil(pageResult.total / PAGE_SIZE));
 }
 
 function paint(): void {
-  const items = filterProducts(all, activeCat, search.value)
-    .filter((p) => showHidden || !p.hidden);
+  const items = pageResult.items;
   const reserved = new Map(getCart().map((l) => [l.id, l.qty] as const));
   renderStore(
     grid,
@@ -129,6 +176,10 @@ function paint(): void {
     (id) => reserved.get(id) ?? 0
   );
   if (statTotal) statTotal.textContent = String(all.length);
+  count.textContent = pageResult.total === 1 ? "1 producto" : `${pageResult.total} productos`;
+  pageLabel.textContent = `Página ${page} de ${totalPages()}`;
+  prevBtn.disabled = page <= 1;
+  nextBtn.disabled = page >= totalPages();
 }
 
 function el(id: string): HTMLElement {

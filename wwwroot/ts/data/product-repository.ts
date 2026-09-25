@@ -1,9 +1,10 @@
 // Layer: ts/data — acceso a datos (API ASP.NET + respaldo localStorage).
-import type { CreateProductDto, Product } from "../domain/models.js";
+import type { CreateProductDto, PagedResult, Product } from "../domain/models.js";
 import { api } from "../services/api-config.js";
-import { authHeader } from "../services/session-store.js";
+import { authFetch } from "./auth-fetch.js";
 
 const API = api("/api/products");
+const API_ALL = api("/api/products/all");
 const LS_KEY = "dg_products_v1";
 
 function readLocal(): Product[] {
@@ -27,7 +28,7 @@ function writeLocal(items: Product[]): void {
 
 export async function fetchProducts(): Promise<Product[]> {
   try {
-    const res = await fetch(API);
+    const res = await fetch(API_ALL);
     if (!res.ok) throw new Error(`API ${res.status}`);
     const data = (await res.json()) as Product[];
     // Normaliza C# (PascalCase) -> TS (camelCase) por si el backend serializa así.
@@ -45,6 +46,59 @@ export async function fetchProducts(): Promise<Product[]> {
   }
 }
 
+export interface PageQuery {
+  limit: number;
+  offset: number;
+  category?: string;
+  query?: string;
+  includeHidden?: boolean;
+}
+
+/**
+ * Pide una ventana del catálogo (desplazamiento). El CDN cachea cada URL.
+ * Sin conexión, pagina la caché local con la misma forma.
+ */
+export async function fetchPage(q: PageQuery): Promise<PagedResult<Product>> {
+  const params = new URLSearchParams({
+    limit: String(q.limit),
+    offset: String(q.offset),
+  });
+  if (q.category && q.category !== "all") params.set("category", q.category);
+  if (q.query && q.query.trim() !== "") params.set("q", q.query.trim());
+  if (q.includeHidden) params.set("includeHidden", "true");
+
+  try {
+    const res = await fetch(`${API}?${params.toString()}`);
+    if (!res.ok) throw new Error(`API ${res.status}`);
+    const data = await res.json();
+    const items = ((data.items ?? data.Items ?? []) as Product[]).map(normalize);
+    return {
+      items,
+      total: Number(data.total ?? data.Total ?? items.length),
+      limit: Number(data.limit ?? data.Limit ?? q.limit),
+      offset: Number(data.offset ?? data.Offset ?? q.offset),
+    };
+  } catch {
+    // Fallback offline: misma forma paginando la caché local.
+    const query = (q.query ?? "").trim().toLowerCase();
+    const filtered = readLocal().filter((p) => {
+      const okCat = !q.category || q.category === "all" || String(p.category) === q.category;
+      const okHidden = q.includeHidden || !p.hidden;
+      const okQuery =
+        query === "" ||
+        p.name.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query);
+      return okCat && okHidden && okQuery;
+    });
+    return {
+      items: filtered.slice(q.offset, q.offset + q.limit),
+      total: filtered.length,
+      limit: q.limit,
+      offset: q.offset,
+    };
+  }
+}
+
 export async function createProduct(dto: CreateProductDto): Promise<Product> {
   const fallback: Product = {
     id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
@@ -57,12 +111,12 @@ export async function createProduct(dto: CreateProductDto): Promise<Product> {
     hidden: dto.hidden,
   };
   try {
-    const res = await fetch(API, {
+    // Why authFetch: si el access venció rota solo y reintenta; NO_AUTH avisa login.
+    const res = await authFetch(API, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...authHeader() },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dto),
     });
-    if (res.status === 401) throw new Error("NO_AUTH");
     if (!res.ok) throw new Error(`API ${res.status}`);
     const created = normalize(await res.json());
     writeLocal([created, ...readLocal()]);
@@ -78,12 +132,11 @@ export async function createProduct(dto: CreateProductDto): Promise<Product> {
 
 export async function updateProduct(id: string, dto: CreateProductDto): Promise<Product> {
   try {
-    const res = await fetch(`${API}/${id}`, {
+    const res = await authFetch(`${API}/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", ...authHeader() },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dto),
     });
-    if (res.status === 401) throw new Error("NO_AUTH");
     if (!res.ok) throw new Error(`API ${res.status}`);
     const updated = normalize(await res.json());
     writeLocal(readLocal().map((p) => (p.id === id ? updated : p)));
@@ -111,10 +164,7 @@ export async function updateProduct(id: string, dto: CreateProductDto): Promise<
 export async function deleteProduct(id: string): Promise<void> {
   const removeLocal = (): void => writeLocal(readLocal().filter((p) => p.id !== id));
   try {
-    const res = await fetch(`${API}/${id}`, { method: "DELETE", headers: { ...authHeader() } });
-    // Why API primero: con 401 no se toca el caché (el producto sigue en el servidor
-    // y reaparecería al recargar, confundiendo al admin).
-    if (res.status === 401) throw new Error("NO_AUTH");
+    await authFetch(`${API}/${id}`, { method: "DELETE" });
     removeLocal();
   } catch (e) {
     if (e instanceof Error && e.message === "NO_AUTH") throw e;

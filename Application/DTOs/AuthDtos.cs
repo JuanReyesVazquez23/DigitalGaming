@@ -43,9 +43,33 @@ public sealed record LoginDto
 }
 
 /// <summary>
-/// Represents the signed-in session returned after register/login.
+/// Represents the signed-in session returned after register/login/refresh.
 /// </summary>
-/// <param name="Token">The signed JWT.</param>
+/// <param name="AccessToken">The short-lived signed JWT.</param>
+/// <param name="RefreshToken">The opaque long-lived token (rotates on each use).</param>
 /// <param name="Username">The login name.</param>
-/// <param name="ExpiresAtUtc">The token UTC expiration.</param>
-public sealed record AuthResponseDto(string Token, string Username, DateTime ExpiresAtUtc);
+/// <param name="ExpiresAtUtc">The access token UTC expiration.</param>
+public sealed record AuthResponseDto(string AccessToken, string RefreshToken, string Username, DateTime ExpiresAtUtc);
+
+/// <summary>
+/// Represents the payload to rotate a session.
+/// </summary>
+public sealed record RefreshDto
+{
+    /// <summary>
+    /// Gets the opaque refresh token.
+    /// </summary>
+    [Required(ErrorMessage = "Falta el refresh token.")]
+    public string RefreshToken { get; init; } = string.Empty;
+}
+
+/// <summary>
+/// Represents the payload to log out (one or all sessions).
+/// </summary>
+public sealed record LogoutDto
+{
+    /// <summary>
+    /// Gets the opaque refresh token, or <see langword="null" /> to close all sessions.
+    /// </summary>
+    public string? RefreshToken { get; init; }
+}

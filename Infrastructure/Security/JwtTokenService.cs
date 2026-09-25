@@ -26,7 +26,7 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options) : IJwtTokenSer
             throw new InvalidOperationException("Falta configurar Jwt:Key (mínimo 32 caracteres).");
         }
 
-        var expires = DateTime.UtcNow.AddMinutes(Math.Max(5, _options.ExpiryMinutes));
+        var expires = DateTime.UtcNow.AddMinutes(Math.Max(5, _options.AccessExpiryMinutes));
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),

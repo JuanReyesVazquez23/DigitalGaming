@@ -1,20 +1,16 @@
-// Layer: ts/services/session-store — guarda la sesión JWT en localStorage.
+// Layer: ts/services/session-store — guarda la sesión en localStorage.
 import type { Session } from "../domain/auth.js";
 
-const KEY = "dm_auth_v1";
+const KEY = "dg_auth_v2";
 
 export function getSession(): Session | null {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return null;
-    const s = JSON.parse(raw) as Session;
-    if (!s.token || !s.username) return null;
-    // Why: si el JWT expiró, se limpia para obligar a entrar de nuevo.
-    if (s.expiresAtUtc && new Date(s.expiresAtUtc).getTime() < Date.now()) {
-      localStorage.removeItem(KEY);
-      return null;
-    }
-    return s;
+    const s = JSON.parse(raw) as Partial<Session>;
+    // Why v2: las sesiones viejas (solo `token`) se descartan y piden entrar de nuevo.
+    if (!s.accessToken || !s.username) return null;
+    return s as Session;
   } catch {
     return null;
   }
@@ -31,5 +27,5 @@ export function clearSession(): void {
 /** Cabecera Authorization si hay sesión, o vacío si es visita pública. */
 export function authHeader(): Record<string, string> {
   const s = getSession();
-  return s ? { Authorization: `Bearer ${s.token}` } : {};
+  return s ? { Authorization: `Bearer ${s.accessToken}` } : {};
 }

@@ -1,13 +1,15 @@
 // Layer: ts/data/auth-repository — registro y login contra /api/auth (devuelve JWT).
 import type { Session } from "../domain/auth.js";
 import { api } from "../services/api-config.js";
+import { getSession } from "../services/session-store.js";
 
 const API = api("/api/auth");
 
 async function parseSession(res: Response): Promise<Session> {
   const data = await res.json();
   return {
-    token: String(data.token ?? data.Token ?? ""),
+    accessToken: String(data.accessToken ?? data.AccessToken ?? data.token ?? data.Token ?? ""),
+    refreshToken: String(data.refreshToken ?? data.RefreshToken ?? ""),
     username: String(data.username ?? data.Username ?? ""),
     expiresAtUtc: String(data.expiresAtUtc ?? data.ExpiresAtUtc ?? ""),
   };
@@ -43,4 +45,20 @@ export async function login(username: string, password: string): Promise<Session
   if (res.status === 401) throw new Error("Nombre o contraseña incorrectos.");
   if (!res.ok) throw new Error(await failMessage(res, "No se pudo entrar."));
   return parseSession(res);
+}
+
+export async function logoutRemote(refreshToken: string): Promise<void> {
+  try {
+    const s = getSession();
+    await fetch(`${API}/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(s ? { Authorization: `Bearer ${s.accessToken}` } : {}),
+      },
+      body: JSON.stringify({ refreshToken }),
+    });
+  } catch {
+    /* salir local siempre funciona aunque falle la red */
+  }
 }

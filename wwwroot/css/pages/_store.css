@@ -20,3 +20,10 @@
   border: 1px dashed #33333a; border-radius: var(--radius);
   padding: 30px; text-align: center; color: var(--text-2); font-size: 0.9rem;
 }
+/* Paginación por desplazamiento */
+.pager { display: flex; align-items: center; gap: 10px; }
+.pager .btn-sm:disabled { opacity: 0.4; cursor: not-allowed; }
+#pageLabel { white-space: nowrap; }
+@media (max-width: 640px) {
+  .pager { justify-content: center; width: 100%; }
+}

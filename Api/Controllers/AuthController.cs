@@ -3,14 +3,17 @@ using DigitalGaming.Application.DTOs;
 using DigitalGaming.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace DigitalGaming.Api.Controllers;
 
 /// <summary>
-/// Exposes registration and login (username + password) returning JWT sessions.
+/// Exposes registration, login, refresh and logout (username + password, JWT + rotation).
 /// </summary>
+/// <remarks>Rate limited per IP against brute force (policy "auth").</remarks>
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("auth")]
 public sealed class AuthController(IAuthService auth) : ControllerBase
 {
     private readonly IAuthService _auth = auth ?? throw new ArgumentNullException(nameof(auth));
@@ -81,5 +84,49 @@ public sealed class AuthController(IAuthService auth) : ControllerBase
         var username = User.FindFirstValue(ClaimTypes.Name) ?? User.FindFirstValue("unique_name");
         var role = User.FindFirstValue(ClaimTypes.Role);
         return Ok(new { username, role });
+    }
+
+    /// <summary>
+    /// Rotates a refresh token, issuing a new session.
+    /// </summary>
+    /// <param name="dto">The rotation payload.</param>
+    /// <param name="ct">The cancellation token.</param>
+    /// <returns>The new session.</returns>
+    [HttpPost("refresh")]
+    [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    public async Task<ActionResult<AuthResponseDto>> Refresh([FromBody] RefreshDto dto, CancellationToken ct)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var session = await _auth.RefreshAsync(dto.RefreshToken, ct).ConfigureAwait(false);
+        return session is null ? Unauthorized(new { message = "Sesión inválida o vencida. Entra de nuevo." }) : Ok(session);
+    }
+
+    /// <summary>
+    /// Logs out: revokes one refresh token, or all user sessions.
+    /// </summary>
+    /// <param name="dto">The logout payload.</param>
+    /// <param name="ct">The cancellation token.</param>
+    /// <returns>No content.</returns>
+    [HttpPost("logout")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Logout([FromBody] LogoutDto? dto, CancellationToken ct)
+    {
+        var raw = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(raw, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        await _auth.LogoutAsync(userId, dto?.RefreshToken, ct).ConfigureAwait(false);
+        return NoContent();
     }
 }

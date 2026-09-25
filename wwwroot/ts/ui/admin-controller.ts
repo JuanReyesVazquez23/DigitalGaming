@@ -2,6 +2,7 @@
 import type { CreateProductDto, Product } from "../domain/models.js";
 import { createProduct, deleteProduct, updateProduct } from "../data/product-repository.js";
 import { categoryOf, normalizeImageUrl, validateNewProduct, withImageFallback } from "../services/product-service.js";
+import { downscaleImage, resolveUpload } from "../services/image.js";
 import { formatPrice } from "../domain/models.js";
 
 interface AdminDeps {
@@ -40,7 +41,10 @@ export function setupAdmin(deps: AdminDeps): {
   const imgStatus = document.getElementById("imgStatus");
 
   let unlocked = false;
-  let fileDataUrl = "";
+  // Archivo pendiente (se sube a Storage al guardar) + imagen ya guardada al editar.
+  let pendingFile: File | null = null;
+  let pendingPreviewUrl = "";
+  let existingImage = "";
   let editingId: string | null = null;
 
   function setUnlocked(v: boolean): void {
@@ -59,10 +63,21 @@ export function setupAdmin(deps: AdminDeps): {
     deps.onLock?.();
   }
 
+  function dropPendingFile(): void {
+    pendingFile = null;
+    if (pendingPreviewUrl !== "") {
+      URL.revokeObjectURL(pendingPreviewUrl);
+      pendingPreviewUrl = "";
+    }
+    fImageFile.value = "";
+  }
+
   function resetForm(): void {
     fName.value = ""; fPrice.value = ""; fStock.value = "1";
     fCategory.value = "Consolas";
-    fImageUrl.value = ""; fImageFile.value = ""; fileDataUrl = "";
+    fImageUrl.value = "";
+    dropPendingFile();
+    existingImage = "";
     fDesc.value = ""; fHidden.checked = false; formError.textContent = "";
     setImgStatus("");
     syncPreview();
@@ -86,15 +101,13 @@ export function setupAdmin(deps: AdminDeps): {
     fPrice.value = String(p.price);
     fStock.value = String(p.stock);
     fCategory.value = String(p.category);
-    // Si la imagen guardada es data-URI la tratamos como archivo; si no, como URL.
+    // La imagen guardada se conserva salvo que escribas URL o elijas archivo.
+    dropPendingFile();
+    existingImage = p.imageUrl;
     if (p.imageUrl.startsWith("data:image/")) {
-      fileDataUrl = p.imageUrl;
       fImageUrl.value = "";
-      fImageFile.value = "";
     } else {
-      fileDataUrl = "";
       fImageUrl.value = p.imageUrl;
-      fImageFile.value = "";
     }
     fDesc.value = p.description ?? "";
     fHidden.checked = p.hidden === true;
@@ -123,14 +136,17 @@ export function setupAdmin(deps: AdminDeps): {
   }
 
   function currentRawUrl(): string {
-    // La URL manda sobre el archivo: si el admin escribe URL, ignoramos el archivo previo.
+    // Prioridad: URL escrita > archivo elegido > imagen ya guardada.
     const typed = fImageUrl.value.trim();
-    return typed !== "" ? typed : fileDataUrl;
+    if (typed !== "") return typed;
+    if (pendingPreviewUrl !== "") return pendingPreviewUrl;
+    return existingImage;
   }
 
   function syncPreview(): void {
     const raw = currentRawUrl();
-    const url = normalizeImageUrl(raw);
+    // blob:/data: son previews locales, no pasan por normalización de URL.
+    const url = raw.startsWith("blob:") || raw.startsWith("data:image/") ? raw : normalizeImageUrl(raw);
     if (url === "") {
       fPreview.dataset.failed = "";
       fPreview.src = PLACEHOLDER_PREVIEW;
@@ -143,10 +159,7 @@ export function setupAdmin(deps: AdminDeps): {
 
   // La URL manda: al escribir, se descarta el archivo previo para que el preview sí cambie.
   fImageUrl.addEventListener("input", () => {
-    if (fImageUrl.value.trim() !== "") {
-      fileDataUrl = "";
-      fImageFile.value = "";
-    }
+    if (fImageUrl.value.trim() !== "") dropPendingFile();
     setImgStatus("");
     syncPreview();
   });
@@ -158,15 +171,12 @@ export function setupAdmin(deps: AdminDeps): {
       setImgStatus("Ese archivo no es una imagen. Elige un JPG, PNG o WEBP.");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      fileDataUrl = String(reader.result ?? "");
-      fImageUrl.value = "";
-      setImgStatus("");
-      syncPreview();
-    };
-    reader.onerror = () => setImgStatus("No se pudo leer ese archivo. Intenta con otro.");
-    reader.readAsDataURL(file);
+    dropPendingFile();
+    pendingFile = file;
+    pendingPreviewUrl = URL.createObjectURL(file);
+    fImageUrl.value = "";
+    setImgStatus("Se subirá a Storage al guardar.");
+    syncPreview();
   });
 
   // Why onerror/onload: la queja era "pego URL y no se ve" sin saber por qué.
@@ -201,16 +211,17 @@ export function setupAdmin(deps: AdminDeps): {
   document.getElementById("lockAdminBtn")?.addEventListener("click", lock);
 
   getEl("saveProductBtn").addEventListener("click", async () => {
-    const dto: CreateProductDto = withImageFallback({
+    const typedUrl = normalizeImageUrl(fImageUrl.value);
+    const provisional: CreateProductDto = withImageFallback({
       name: fName.value.trim(),
       price: Number(fPrice.value),
       category: categoryOf(fCategory.value),
-      imageUrl: normalizeImageUrl(currentRawUrl()),
+      imageUrl: typedUrl !== "" ? typedUrl : existingImage,
       description: fDesc.value.trim(),
       stock: Math.max(0, Number(fStock.value || 0)),
       hidden: fHidden.checked,
     });
-    const err = validateNewProduct(dto);
+    const err = validateNewProduct(provisional);
     if (err) {
       formError.textContent = err;
       return;
@@ -218,6 +229,15 @@ export function setupAdmin(deps: AdminDeps): {
     formError.textContent = "";
     saveBtn.disabled = true;
     try {
+      // Why: el archivo se optimiza y sube a Storage acá (URL manda y no había).
+      let finalImage = provisional.imageUrl;
+      if (typedUrl === "" && pendingFile) {
+        setImgStatus("Subiendo imagen…");
+        const small = await downscaleImage(pendingFile);
+        finalImage = await resolveUpload(small, pendingFile.name);
+        setImgStatus("");
+      }
+      const dto: CreateProductDto = { ...provisional, imageUrl: finalImage };
       if (editingId) {
         await updateProduct(editingId, dto);
       } else {
@@ -227,9 +247,13 @@ export function setupAdmin(deps: AdminDeps): {
       closeModal();
       await deps.onChanged();
     } catch (e) {
-      formError.textContent = e instanceof Error && e.message === "NO_AUTH"
-        ? "Necesitas entrar con tu cuenta para guardar. Usa el botón Entrar de arriba."
-        : "No se pudo guardar. Revisa los datos e intenta de nuevo.";
+      if (e instanceof Error && e.message === "NO_AUTH") {
+        formError.textContent = "Necesitas entrar con tu cuenta para guardar. Usa el botón Entrar de arriba.";
+      } else if (e instanceof Error && e.message !== "" && !e.message.startsWith("API ")) {
+        formError.textContent = e.message;
+      } else {
+        formError.textContent = "No se pudo guardar. Revisa los datos e intenta de nuevo.";
+      }
     } finally {
       saveBtn.disabled = false;
     }

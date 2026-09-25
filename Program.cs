@@ -1,11 +1,13 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using DigitalGaming.Application.Services;
 using DigitalGaming.Core.Interfaces;
 using DigitalGaming.Infrastructure.Persistence;
 using DigitalGaming.Infrastructure.Repositories;
 using DigitalGaming.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -49,12 +51,14 @@ if (usePostgres)
     builder.Services.AddScoped<IProductRepository, EfProductRepository>();
     builder.Services.AddScoped<IUserRepository, EfUserRepository>();
     builder.Services.AddScoped<IOrderRepository, EfOrderRepository>();
+    builder.Services.AddScoped<IRefreshTokenRepository, EfRefreshTokenRepository>();
 }
 else
 {
     builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
     builder.Services.AddSingleton<IUserRepository, InMemoryUserRepository>();
     builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
+    builder.Services.AddSingleton<IRefreshTokenRepository, InMemoryRefreshTokenRepository>();
 }
 
 // --- Layered DI: Infrastructure -> Application ---
@@ -62,6 +66,20 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+
+// --- Rate limiting: anti fuerza bruta en auth (10 req/min por IP). ---
+builder.Services.AddRateLimiter(o =>
+{
+    o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    o.AddPolicy("auth", context => RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+        }));
+});
 
 // --- JWT bearer auth: valida firma, emisor, audiencia y vida útil del token. ---
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -97,12 +115,14 @@ app.UseStaticFiles();
 
 app.UseCors();
 
+app.UseRateLimiter();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Fallback SPA: cualquier ruta no-API devuelve index.html (MVP)
+// Fallback SPA: cualquier ruta no-API devuelve index.html
 app.MapFallbackToFile("index.html");
 
 app.Run();

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./css/main.css?v=15" />
+  <link rel="stylesheet" href="./css/main.css?v=17" />
   <link rel="icon" href="./assets/brand/favicon.svg" type="image/svg+xml" />
   <link rel="alternate icon" href="./assets/brand/favicon.ico" />
   <link rel="icon" href="./assets/brand/favicon-32x32.png" sizes="32x32" type="image/png" />
@@ -101,6 +101,11 @@
         <button class="chip" data-cat="Monitores">Monitores</button>
       </div>
       <span id="countLabel" class="muted"></span>
+      <div class="pager" aria-label="Paginación del catálogo">
+        <button id="prevPage" class="btn btn-ghost btn-sm">← Ant.</button>
+        <span id="pageLabel" class="muted"></span>
+        <button id="nextPage" class="btn btn-ghost btn-sm">Sig. →</button>
+      </div>
     </div>
 
     <section id="grid" class="grid" aria-live="polite"></section>
@@ -187,6 +192,7 @@
               <div class="field">
                 <label for="fImageFile">O sube un archivo</label>
                 <input id="fImageFile" type="file" accept="image/*" />
+                <p class="img-hint">JPG, PNG o WEBP hasta 4MB: se optimiza y sube a Storage al guardar. Sin Storage, se guarda local.</p>
               </div>
               <p id="imgStatus" class="img-status" role="status" aria-live="polite"></p>
             </div>
@@ -206,8 +212,8 @@
   </div>
 
   <!-- DG_API_URL: en Vercel se genera desde la env API_URL; en local es "" (mismo origen). -->
-  <script src="./js/config.js?v=12"></script>
-  <script type="module" src="./js/app.js?v=12"></script>
+  <script src="./js/config.js?v=17"></script>
+  <script type="module" src="./js/app.js?v=17"></script>
 
   <!-- Modal sesión: entrar o crear cuenta (para comprar) -->
   <div id="authBackdrop" class="modal-backdrop">

@@ -22,7 +22,12 @@ public sealed class JwtOptions
     public string Audience { get; set; } = "DigitalGaming";
 
     /// <summary>
-    /// Gets or sets the token lifetime in minutes.
+    /// Gets or sets the access token lifetime in minutes.
     /// </summary>
-    public int ExpiryMinutes { get; set; } = 720;
+    public int AccessExpiryMinutes { get; set; } = 15;
+
+    /// <summary>
+    /// Gets or sets the refresh token lifetime in days.
+    /// </summary>
+    public int RefreshTokenDays { get; set; } = 30;
 }

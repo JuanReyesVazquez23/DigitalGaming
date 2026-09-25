@@ -17,6 +17,18 @@ public interface IProductService
     Task<IReadOnlyList<Product>> GetCatalogAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets one catalog window with optional filters asynchronously (desplazamiento).
+    /// </summary>
+    /// <param name="limit">The window size (clamped to 1-50).</param>
+    /// <param name="offset">The displacement from the start.</param>
+    /// <param name="category">The category name filter, or <see langword="null" /> for all.</param>
+    /// <param name="query">The text search, or <see langword="null" /> for all.</param>
+    /// <param name="includeHidden">Whether to include hidden products.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The requested window.</returns>
+    Task<PagedResult<Product>> GetPagedAsync(int limit, int offset, string? category, string? query, bool includeHidden, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Creates a product from a DTO asynchronously.
     /// </summary>
     /// <param name="dto">The creation payload.</param>

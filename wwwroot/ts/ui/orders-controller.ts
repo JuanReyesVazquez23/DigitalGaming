@@ -34,7 +34,7 @@ export function setupOrders(deps: OrdersDeps): {
     document.body.classList.add("modal-open");
 
     try {
-      const orders = await mine(session.token);
+      const orders = await mine();
       empty.style.display = orders.length === 0 ? "block" : "none";
       for (const o of orders) {
         const card = document.createElement("div");

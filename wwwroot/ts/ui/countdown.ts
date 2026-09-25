@@ -7,6 +7,11 @@ export function setupCountdown(targetIso: string): void {
   const m = document.getElementById("cdMins");
   const s = document.getElementById("cdSecs");
   if (!box || !d || !h || !m || !s) return;
+  const boxEl: HTMLElement = box;
+  const dEl: HTMLElement = d;
+  const hEl: HTMLElement = h;
+  const mEl: HTMLElement = m;
+  const sEl: HTMLElement = s;
   const target = new Date(targetIso).getTime();
   if (!Number.isFinite(target)) return;
 
@@ -15,7 +20,7 @@ export function setupCountdown(targetIso: string): void {
   function tick(): void {
     const diff = target - Date.now();
     if (diff <= 0) {
-      box.style.display = "none";
+      boxEl.style.display = "none";
       if (live) live.hidden = false;
       window.clearInterval(timer);
       return;
@@ -24,10 +29,10 @@ export function setupCountdown(targetIso: string): void {
     const hours = Math.floor((diff % 86_400_000) / 3_600_000);
     const mins = Math.floor((diff % 3_600_000) / 60_000);
     const secs = Math.floor((diff % 60_000) / 1000);
-    d.textContent = String(days);
-    h.textContent = pad(hours);
-    m.textContent = pad(mins);
-    s.textContent = pad(secs);
+    dEl.textContent = String(days);
+    hEl.textContent = pad(hours);
+    mEl.textContent = pad(mins);
+    sEl.textContent = pad(secs);
   }
 
   const timer = window.setInterval(tick, 1000);

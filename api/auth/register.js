@@ -1,6 +1,7 @@
-// POST /api/auth/register — crea cuenta (nombre + contraseña) y devuelve sesión JWT
+// POST /api/auth/register — crea cuenta (nombre + contraseña) y devuelve sesión (access + refresh)
 import { getPool } from "../_db.js";
-import { hashPassword, send, signToken } from "../_auth.js";
+import { hashPassword, newRefreshToken, refreshExpiresAt, send, signToken } from "../_auth.js";
+import { authRateLimit } from "../_ratelimit.js";
 import crypto from "node:crypto";
 
 export default async function handler(req, res) {
@@ -8,6 +9,7 @@ export default async function handler(req, res) {
     res.setHeader("Allow", "POST");
     return send(res, 405, { message: "Método no permitido." });
   }
+  if (!authRateLimit(req)) return send(res, 429, { message: "Demasiados intentos. Espera un minuto." });
   const pool = getPool();
   const dto = req.body || {};
   const username = String(dto.username ?? dto.Username ?? "").trim();
@@ -24,5 +26,11 @@ export default async function handler(req, res) {
     [id, username, hashPassword(password)]
   );
   const s = signToken({ id, username, role: "cliente" });
-  return send(res, 201, { token: s.token, username, expiresAtUtc: s.expiresAtUtc });
+  const r = newRefreshToken();
+  await pool.query(
+    `INSERT INTO "RefreshTokens"("Id","UserId","TokenHash","CreatedAtUtc","ExpiresAtUtc","RevokedAtUtc")
+     VALUES (gen_random_uuid(),$1,$2,now(),$3,NULL)`,
+    [id, r.hash, refreshExpiresAt()]
+  );
+  return send(res, 201, { accessToken: s.token, refreshToken: r.opaque, username, expiresAtUtc: s.expiresAtUtc });
 }

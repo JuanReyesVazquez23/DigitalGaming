@@ -1,4 +1,6 @@
-// GET /api/products (público) · POST /api/products (requiere login)
+// GET /api/products?limit=&offset=&category=&q=&includeHidden= (público, cacheable en CDN)
+// GET /api/products/all (catálogo completo: admin/listas)
+// POST /api/products (requiere login)
 import { getPool } from "./_db.js";
 import { categoryToInt, categoryToName, getAuthUser, send } from "./_auth.js";
 
@@ -15,6 +17,8 @@ function mapRow(r) {
   };
 }
 
+const SELECT = `SELECT "Id","Name","Price","Category","ImageUrl","Description","Stock","Hidden" FROM "Products"`;
+
 function validate(dto) {
   const name = String(dto.name ?? dto.Name ?? "").trim();
   if (name.length < 2) return "El nombre debe tener al menos 2 caracteres.";
@@ -25,14 +29,48 @@ function validate(dto) {
   return null;
 }
 
+/** Filtros compartidos: devuelve {where, params} con placeholders $n. */
+function filters(q, startAt) {
+  const where = [];
+  const params = [];
+  let i = startAt;
+  const cat = String(q.category ?? "").trim();
+  if (cat !== "") {
+    const idx = ["Consolas", "Videojuegos", "Accesorios", "PC", "Monitores"].indexOf(cat);
+    if (idx !== -1) {
+      params.push(idx);
+      where.push(`"Category"=$${i++}`);
+    }
+  }
+  const text = String(q.q ?? "").trim();
+  if (text !== "") {
+    params.push(`%${text}%`);
+    where.push(`("Name" ILIKE $${i} OR "Description" ILIKE $${i})`);
+    i++;
+  }
+  if (String(q.includeHidden ?? "") !== "true") {
+    where.push(`"Hidden"=FALSE`);
+  }
+  return { where: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "", params, next: i };
+}
+
 export default async function handler(req, res) {
   const pool = getPool();
 
   if (req.method === "GET") {
+    // Why caché CDN: catálogo público e igual para todos; cada querystring se
+    // cachea 60s en el edge con revalidación de fondo.
+    res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+    const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 12));
+    const offset = Math.max(0, Number(req.query.offset) || 0);
+    const { where, params, next } = filters(req.query, 1);
+    const { rows: totalRows } = await pool.query(`SELECT COUNT(*)::int AS total FROM "Products" ${where}`, params);
+    const total = totalRows[0]?.total ?? 0;
     const { rows } = await pool.query(
-      `SELECT "Id","Name","Price","Category","ImageUrl","Description","Stock","Hidden" FROM "Products" ORDER BY "Name"`
+      `${SELECT} ${where} ORDER BY "Name" LIMIT $${next} OFFSET $${next + 1}`,
+      [...params, limit, offset]
     );
-    return send(res, 200, rows.map(mapRow));
+    return send(res, 200, { items: rows.map(mapRow), total, limit, offset });
   }
 
   if (req.method === "POST") {

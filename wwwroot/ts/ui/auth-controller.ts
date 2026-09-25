@@ -1,5 +1,5 @@
 // Layer: ts/ui/auth-controller — modal entrar/crear cuenta + chip de sesión en el header.
-import { login, register } from "../data/auth-repository.js";
+import { login, logoutRemote, register } from "../data/auth-repository.js";
 import { clearSession, getSession, saveSession } from "../services/session-store.js";
 
 interface AuthDeps {
@@ -69,6 +69,9 @@ export function setupAuth(deps: AuthDeps): {
     if (e.key === "Escape" && backdrop.classList.contains("open")) closeAuth();
   });
   getEl("logoutBtn").addEventListener("click", () => {
+    // Why: se revoca en el servidor primero; lo local se limpia siempre.
+    const s = getSession();
+    if (s?.refreshToken) void logoutRemote(s.refreshToken);
     clearSession();
     refreshHeader();
     deps.onSessionChanged();

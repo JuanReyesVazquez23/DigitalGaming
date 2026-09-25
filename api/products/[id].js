@@ -1,6 +1,15 @@
 // PUT /api/products/:id · DELETE /api/products/:id (requieren login)
+import { del } from "@vercel/blob";
 import { getPool } from "../_db.js";
 import { categoryToInt, categoryToName, getAuthUser, send } from "../_auth.js";
+
+/** Borra el blob viejo sin romper nada si no es blob o falla. */
+async function dropBlob(url) {
+  if (typeof url !== "string" || (!url.includes("blob.vercel-storage.com") && !url.includes("public.blob.vercel-storage.com"))) return;
+  try {
+    await del(url);
+  } catch { /* best-effort */ }
+}
 
 export default async function handler(req, res) {
   if (!getAuthUser(req)) return send(res, 401, { message: "No autorizado." });
@@ -20,6 +29,7 @@ export default async function handler(req, res) {
       return send(res, 400, { message: e.message });
     }
     const imageUrl = String(dto.imageUrl ?? dto.ImageUrl ?? "").trim() || `https://placehold.co/600x400/111111/E10600?text=${encodeURIComponent(name)}`;
+    const prev = await pool.query(`SELECT "ImageUrl" FROM "Products" WHERE "Id"=$1`, [id]);
     const { rows } = await pool.query(
       `UPDATE "Products" SET "Name"=$1,"Price"=$2,"Category"=$3,"ImageUrl"=$4,"Description"=$5,"Stock"=$6,"Hidden"=$7
        WHERE "Id"=$8
@@ -29,6 +39,7 @@ export default async function handler(req, res) {
     );
     if (rows.length === 0) return send(res, 404, { message: "No encontrado." });
     const r = rows[0];
+    if (prev.rows[0] && prev.rows[0].ImageUrl !== r.ImageUrl) await dropBlob(prev.rows[0].ImageUrl);
     return send(res, 200, {
       id: r.Id, name: r.Name, price: Number(r.Price), category: categoryToName(r.Category),
       imageUrl: r.ImageUrl, description: r.Description, stock: r.Stock, hidden: !!r.Hidden,
@@ -36,8 +47,10 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "DELETE") {
+    const prev = await pool.query(`SELECT "ImageUrl" FROM "Products" WHERE "Id"=$1`, [id]);
     const { rowCount } = await pool.query(`DELETE FROM "Products" WHERE "Id"=$1`, [id]);
     if (rowCount === 0) return send(res, 404, { message: "No encontrado." });
+    if (prev.rows[0]) await dropBlob(prev.rows[0].ImageUrl);
     return res.status(204).end();
   }
 

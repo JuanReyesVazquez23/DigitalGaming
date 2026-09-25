@@ -18,6 +18,33 @@ public sealed class ProductService(IProductRepository repository) : IProductServ
         => _repository.GetAllAsync(cancellationToken);
 
     /// <inheritdoc/>
+    public async Task<PagedResult<Product>> GetPagedAsync(int limit, int offset, string? category, string? query, bool includeHidden, CancellationToken cancellationToken = default)
+    {
+        limit = Math.Clamp(limit <= 0 ? 12 : limit, 1, 50);
+        offset = Math.Max(0, offset);
+
+        var items = await _repository.GetAllAsync(cancellationToken).ConfigureAwait(false);
+
+        Category? wanted = null;
+        if (!string.IsNullOrWhiteSpace(category) && Enum.TryParse<Category>(category.Trim(), ignoreCase: true, out var parsed))
+        {
+            wanted = parsed;
+        }
+
+        var q = query?.Trim();
+        var filtered = items
+            .Where(p => (includeHidden || !p.Hidden)
+                && (!wanted.HasValue || p.Category == wanted.Value)
+                && (string.IsNullOrEmpty(q)
+                    || p.Name.Contains(q, StringComparison.OrdinalIgnoreCase)
+                    || p.Description.Contains(q, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+
+        var window = filtered.Skip(offset).Take(limit).ToList();
+        return new PagedResult<Product>(window, filtered.Count, limit, offset);
+    }
+
+    /// <inheritdoc/>
     public Task<Product> CreateAsync(CreateProductDto dto, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(dto);

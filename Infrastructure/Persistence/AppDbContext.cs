@@ -22,6 +22,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     /// <summary>Gets or sets the order lines table.</summary>
     public DbSet<OrderItemEntity> OrderItems => Set<OrderItemEntity>();
 
+    /// <summary>Gets or sets the refresh tokens table.</summary>
+    public DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -52,6 +55,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         {
             e.HasKey(x => x.Id);
             e.Property(x => x.UnitPrice).HasPrecision(12, 2);
+        });
+        b.Entity<RefreshTokenEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.TokenHash).HasMaxLength(128).IsRequired();
+            e.HasIndex(x => x.TokenHash).IsUnique();
+            e.HasIndex(x => x.UserId);
         });
     }
 }
