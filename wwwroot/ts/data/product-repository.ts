@@ -99,7 +99,13 @@ export async function fetchPage(q: PageQuery): Promise<PagedResult<Product>> {
   }
 }
 
-export async function createProduct(dto: CreateProductDto): Promise<Product> {
+export interface SaveResult {
+  product: Product;
+  /** True si quedó en el servidor; false si solo en este navegador (sin conexión). */
+  remote: boolean;
+}
+
+export async function createProduct(dto: CreateProductDto): Promise<SaveResult> {
   const fallback: Product = {
     id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
     name: dto.name,
@@ -120,17 +126,17 @@ export async function createProduct(dto: CreateProductDto): Promise<Product> {
     if (!res.ok) throw new Error(`API ${res.status}`);
     const created = normalize(await res.json());
     writeLocal([created, ...readLocal()]);
-    return created;
+    return { product: created, remote: true };
   } catch (e) {
     // Why: sin login (401) no se inventa un producto local: el admin debe ver el
     // aviso de sesión en vez de creer que guardó en el servidor.
     if (e instanceof Error && e.message === "NO_AUTH") throw e;
     writeLocal([fallback, ...readLocal()]);
-    return fallback;
+    return { product: fallback, remote: false };
   }
 }
 
-export async function updateProduct(id: string, dto: CreateProductDto): Promise<Product> {
+export async function updateProduct(id: string, dto: CreateProductDto): Promise<SaveResult> {
   try {
     const res = await authFetch(`${API}/${id}`, {
       method: "PUT",
@@ -140,7 +146,7 @@ export async function updateProduct(id: string, dto: CreateProductDto): Promise<
     if (!res.ok) throw new Error(`API ${res.status}`);
     const updated = normalize(await res.json());
     writeLocal(readLocal().map((p) => (p.id === id ? updated : p)));
-    return updated;
+    return { product: updated, remote: true };
   } catch (e) {
     if (e instanceof Error && e.message === "NO_AUTH") throw e;
     // Sin conexión: upsert local para no perder la edición.
@@ -157,7 +163,7 @@ export async function updateProduct(id: string, dto: CreateProductDto): Promise<
     };
     const exists = current.some((p) => p.id === id);
     writeLocal(exists ? current.map((p) => (p.id === id ? edited : p)) : [edited, ...current]);
-    return edited;
+    return { product: edited, remote: false };
   }
 }
 

@@ -2,6 +2,7 @@
 import type { CreateProductDto, Product } from "../domain/models.js";
 import { createProduct, deleteProduct, updateProduct } from "../data/product-repository.js";
 import { categoryOf, normalizeImageUrl, validateNewProduct, withImageFallback } from "../services/product-service.js";
+import { toast } from "./cart-drawer.js";
 import { downscaleImage, resolveUpload } from "../services/image.js";
 import { formatPrice } from "../domain/models.js";
 
@@ -238,14 +239,15 @@ export function setupAdmin(deps: AdminDeps): {
         setImgStatus("");
       }
       const dto: CreateProductDto = { ...provisional, imageUrl: finalImage };
-      if (editingId) {
-        await updateProduct(editingId, dto);
-      } else {
-        await createProduct(dto);
-      }
+      const saved = editingId
+        ? await updateProduct(editingId, dto)
+        : await createProduct(dto);
       resetForm();
       closeModal();
       await deps.onChanged();
+      toast(saved.remote
+        ? "Guardado en el servidor ✓"
+        : "Sin conexión: visible solo en este navegador ⚠️");
     } catch (e) {
       if (e instanceof Error && e.message === "NO_AUTH") {
         formError.textContent = "Necesitas entrar con tu cuenta para guardar. Usa el botón Entrar de arriba.";
