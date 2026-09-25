@@ -161,3 +161,21 @@ BEGIN
 END $EF$;
 COMMIT;
 
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260925023903_ProductImageUnlimited') THEN
+    ALTER TABLE "Products" ALTER COLUMN "ImageUrl" TYPE text;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260925023903_ProductImageUnlimited') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260925023903_ProductImageUnlimited', '10.0.12');
+    END IF;
+END $EF$;
+COMMIT;
+

@@ -33,7 +33,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             e.HasKey(x => x.Id);
             e.Property(x => x.Name).HasMaxLength(80).IsRequired();
             e.Property(x => x.Price).HasPrecision(12, 2);
-            e.Property(x => x.ImageUrl).HasMaxLength(2000);
+            // Why TEXT sin límite: el fallback base64 local supera los 2000 caracteres
+            // y el servidor devolvía 500 en vez de guardar.
+            e.Property(x => x.ImageUrl).HasColumnType("text");
             e.Property(x => x.Description).HasMaxLength(500);
         });
         b.Entity<UserEntity>(e =>
