@@ -27,7 +27,9 @@ function validate(dto: Record<string, unknown>): string | null {
   return null;
 }
 
-/** Filtros compartidos: devuelve {where, params} con placeholders $n. */
+/** Filtros compartidos: devuelve {where, params} con placeholders $n.
+ * Búsqueda tolerante: cada palabra (sin tildes vía unaccent) debe aparecer
+ * en nombre o descripción, en cualquier orden. */
 function filters(
   q: Record<string, string | string[] | undefined>,
   startAt: number
@@ -43,10 +45,13 @@ function filters(
       where.push(`"Category"=$${i++}`);
     }
   }
-  const text = String(q.q ?? "").trim();
-  if (text !== "") {
-    params.push(`%${text}%`);
-    where.push(`("Name" ILIKE $${i} OR "Description" ILIKE $${i})`);
+  const tokens = String(q.q ?? "")
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter((t) => t !== "");
+  for (const t of tokens) {
+    params.push(`%${t}%`);
+    where.push(`(unaccent("Name") ILIKE unaccent($${i}) OR unaccent("Description") ILIKE unaccent($${i}))`);
     i++;
   }
   if (String(q.includeHidden ?? "") !== "true") {

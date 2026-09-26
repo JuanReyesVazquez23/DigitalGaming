@@ -8,7 +8,9 @@ export function renderStore(
   items: Product[],
   onAdd?: (id: string) => void,
   /** Cantidad de ese producto ya apartada en el carrito (para mostrar stock en vivo). */
-  cartQty?: (id: string) => number
+  cartQty?: (id: string) => number,
+  /** Abre el detalle al tocar foto o título. */
+  onOpen?: (id: string) => void
 ): void {
   grid.innerHTML = "";
   count.textContent = items.length === 1 ? "1 producto" : `${items.length} productos`;
@@ -41,6 +43,14 @@ export function renderStore(
     (card.querySelector(".card-title") as HTMLElement).textContent = p.name;
     (card.querySelector(".card-desc") as HTMLElement).textContent = p.description || "Sin descripción.";
     (card.querySelector(".price") as HTMLElement).textContent = formatPrice(p.price);
+    const titleEl = card.querySelector(".card-title") as HTMLElement;
+    const mediaEl = card.querySelector(".card-media") as HTMLElement;
+    if (onOpen) {
+      titleEl.classList.add("clickable");
+      mediaEl.classList.add("clickable");
+      titleEl.addEventListener("click", () => onOpen(p.id));
+      mediaEl.addEventListener("click", () => onOpen(p.id));
+    }
     // Stock en vivo: lo que queda menos lo que ya apartaste en el carrito.
     const reserved = cartQty?.(p.id) ?? 0;
     const available = Math.max(0, p.stock - reserved);

@@ -12,6 +12,21 @@ interface OrderLine {
   quantity: number;
 }
 
+/** Zonas espejo de ts/services/shipping.ts. */
+const FREE_SHIPPING_OVER = 20000;
+
+function normalizeZone(zoneId: unknown): string {
+  const z = String(zoneId ?? "").trim().toLowerCase();
+  if (z === "interior" || z === "pickup") return z;
+  return "santo-domingo";
+}
+
+function zoneCost(zone: string): number {
+  if (zone === "interior") return 450;
+  if (zone === "pickup") return 0;
+  return 250;
+}
+
 const handler: Handler = async (req, res) => {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -25,6 +40,7 @@ const handler: Handler = async (req, res) => {
   if (!Array.isArray(items) || items.length === 0) {
     return send(res, 400, { message: "El carrito está vacío." });
   }
+  const zone = normalizeZone(body.zoneId ?? body.ZoneId);
   // Agrupa por producto antes de validar stock.
   const grouped = new Map<string, number>();
   for (const it of items) {
@@ -59,11 +75,13 @@ const handler: Handler = async (req, res) => {
       lines.push({ productId: String(p.Id), productName: String(p.Name), unitPrice: Number(p.Price), quantity: qty });
       await client.query(`UPDATE "Products" SET "Stock"="Stock"-$1 WHERE "Id"=$2`, [qty, pid]);
     }
-    const total = lines.reduce((n, l) => n + l.unitPrice * l.quantity, 0);
+    const subtotal = lines.reduce((n, l) => n + l.unitPrice * l.quantity, 0);
+    const shipping = subtotal >= FREE_SHIPPING_OVER ? 0 : zoneCost(zone);
+    const total = subtotal + shipping;
     const orderId = crypto.randomUUID();
     await client.query(
-      `INSERT INTO "Orders"("Id","UserId","Username","Total","CreatedAtUtc") VALUES ($1,$2,$3,$4,now())`,
-      [orderId, user.id, user.username, total]
+      `INSERT INTO "Orders"("Id","UserId","Username","Total","ShippingZone","ShippingCost","CreatedAtUtc") VALUES ($1,$2,$3,$4,$5,$6,now())`,
+      [orderId, user.id, user.username, total, zone, shipping]
     );
     for (const l of lines) {
       await client.query(
@@ -73,7 +91,7 @@ const handler: Handler = async (req, res) => {
       );
     }
     await client.query("COMMIT");
-    return send(res, 201, { id: orderId, total, items: lines });
+    return send(res, 201, { id: orderId, total, shippingZone: zone, shippingCost: shipping, items: lines });
   } catch (e) {
     try {
       await client.query("ROLLBACK");

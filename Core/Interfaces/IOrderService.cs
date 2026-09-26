@@ -15,9 +15,10 @@ public interface IOrderService
     /// <param name="userId">The buying user identifier.</param>
     /// <param name="username">The buying username.</param>
     /// <param name="items">The cart items.</param>
+    /// <param name="zoneId">The shipping zone identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The created order.</returns>
-    Task<Order> CheckoutAsync(Guid userId, string username, IReadOnlyList<CheckoutItemDto> items, CancellationToken cancellationToken = default);
+    Task<Order> CheckoutAsync(Guid userId, string username, IReadOnlyList<CheckoutItemDto> items, string? zoneId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the order history of a user asynchronously.

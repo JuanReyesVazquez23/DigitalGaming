@@ -9,6 +9,8 @@ const API = api("/api/orders");
 export interface PlacedOrder {
   id: string;
   total: number;
+  shippingZone: string;
+  shippingCost: number;
   items: { productName: string; quantity: number; unitPrice: number }[];
 }
 
@@ -16,11 +18,11 @@ export interface PlacedOrderFull extends PlacedOrder {
   createdAtUtc: string;
 }
 
-export async function checkout(lines: CheckoutLine[]): Promise<PlacedOrder> {
+export async function checkout(lines: CheckoutLine[], zoneId: string): Promise<PlacedOrder> {
   const res = await authFetch(API, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ items: lines }),
+    body: JSON.stringify({ items: lines, zoneId }),
   });
   if (!res.ok) {
     let msg = "No se pudo completar la compra.";
@@ -42,6 +44,8 @@ export async function checkout(lines: CheckoutLine[]): Promise<PlacedOrder> {
   return {
     id: String(o.id ?? o.Id ?? ""),
     total: Number(o.total ?? o.Total ?? 0),
+    shippingZone: String(o.shippingZone ?? o.ShippingZone ?? ""),
+    shippingCost: Number(o.shippingCost ?? o.ShippingCost ?? 0),
     items,
   };
 }
@@ -63,6 +67,8 @@ export async function mine(): Promise<PlacedOrderFull[]> {
   return arr.map((o) => ({
     id: String(o.id ?? o.Id ?? ""),
     total: Number(o.total ?? o.Total ?? 0),
+    shippingZone: String(o.shippingZone ?? o.ShippingZone ?? ""),
+    shippingCost: Number(o.shippingCost ?? o.ShippingCost ?? 0),
     createdAtUtc: String(o.createdAtUtc ?? o.CreatedAtUtc ?? ""),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     items: (((o.items ?? o.Items ?? []) as any[]).map((i) => ({

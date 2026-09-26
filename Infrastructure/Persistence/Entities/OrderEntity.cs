@@ -20,6 +20,12 @@ public sealed class OrderEntity
     /// <summary>Gets or sets the order total in RD$.</summary>
     public decimal Total { get; set; }
 
+    /// <summary>Gets or sets the shipping zone identifier.</summary>
+    public string ShippingZone { get; set; } = "santo-domingo";
+
+    /// <summary>Gets or sets the shipping cost in RD$.</summary>
+    public decimal ShippingCost { get; set; }
+
     /// <summary>Gets or sets the creation date in UTC.</summary>
     public DateTime CreatedAtUtc { get; set; }
 
@@ -37,6 +43,8 @@ public sealed class OrderEntity
         UserId = o.UserId,
         Username = o.Username,
         Total = o.Total,
+        ShippingZone = o.ShippingZone,
+        ShippingCost = o.ShippingCost,
         CreatedAtUtc = o.CreatedAtUtc,
         Items = o.Items.Select(i => new OrderItemEntity
         {
@@ -58,7 +66,9 @@ public sealed class OrderEntity
         Username,
         Items.Select(i => new OrderItem(i.ProductId, i.ProductName, i.UnitPrice, i.Quantity)).ToList(),
         Total,
-        CreatedAtUtc);
+        CreatedAtUtc,
+        ShippingZone,
+        ShippingCost);
 }
 
 /// <summary>

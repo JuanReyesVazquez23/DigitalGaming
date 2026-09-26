@@ -30,16 +30,35 @@ export function withImageFallback(dto: CreateProductDto): CreateProductDto {
   };
 }
 
+/**
+ * Minúsculas sin tildes ni signos: "Audífono" -> "audifono".
+ * Así la búsqueda perdona tildes, mayúsculas y puntuación.
+ */
+export function normalizeText(s: string): string {
+  return (s ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Búsqueda tolerante: cada palabra (ya normalizada) debe aparecer
+ * en nombre, descripción o categoría, en cualquier orden.
+ */
+export function matchesProduct(p: Product, category: string, query: string): boolean {
+  const okCat = category === "all" || String(p.category) === category;
+  if (!okCat) return false;
+  const tokens = normalizeText(query).split(" ").filter(Boolean);
+  if (tokens.length === 0) return true;
+  const hay = normalizeText(`${p.name} ${p.description} ${String(p.category)}`);
+  return tokens.every((t) => hay.includes(t));
+}
+
 export function filterProducts(items: Product[], category: string, query: string): Product[] {
-  const q = query.trim().toLowerCase();
-  return items.filter((p) => {
-    const okCat = category === "all" || String(p.category) === category;
-    const okQuery =
-      q === "" ||
-      p.name.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q);
-    return okCat && okQuery;
-  });
+  return items.filter((p) => matchesProduct(p, category, query));
 }
 
 export function categoryOf(value: string): Category {

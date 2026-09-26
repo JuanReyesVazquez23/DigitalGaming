@@ -21,6 +21,7 @@
 @import url("./components/_auth.css") layer(components);
 
 @import url("./pages/_store.css") layer(pages);
+@import url("./pages/_detail.css") layer(pages);
 @import url("./pages/_gta-banner.css") layer(pages);
 @import url("./pages/_cart.css") layer(pages);
 @import url("./pages/_admin.css") layer(pages);

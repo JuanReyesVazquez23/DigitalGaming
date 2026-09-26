@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text;
 using DigitalGaming.Application.DTOs;
 using DigitalGaming.Core.Interfaces;
 using DigitalGaming.Core.Models;
@@ -32,12 +34,12 @@ public sealed class ProductService(IProductRepository repository) : IProductServ
         }
 
         var q = query?.Trim();
+        var tokens = Normalize(q ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var filtered = items
             .Where(p => (includeHidden || !p.Hidden)
                 && (!wanted.HasValue || p.Category == wanted.Value)
-                && (string.IsNullOrEmpty(q)
-                    || p.Name.Contains(q, StringComparison.OrdinalIgnoreCase)
-                    || p.Description.Contains(q, StringComparison.OrdinalIgnoreCase)))
+                && (tokens.Length == 0
+                    || tokens.All(t => Normalize($"{p.Name} {p.Description} {p.Category}").Contains(t))))
             .ToList();
 
         var window = filtered.Skip(offset).Take(limit).ToList();
@@ -73,6 +75,28 @@ public sealed class ProductService(IProductRepository repository) : IProductServ
             dto.Hidden);
 
         return _repository.AddAsync(product, cancellationToken);
+    }
+
+    /// <summary>
+    /// Lowercases without diacritics or punctuation: "Audífono" matches "audifono".
+    /// </summary>
+    /// <param name="s">The raw text.</param>
+    /// <returns>The normalized text.</returns>
+    private static string Normalize(string s)
+    {
+        var formD = (s ?? "").ToLowerInvariant().Normalize(NormalizationForm.FormD);
+        var sb = new StringBuilder(formD.Length);
+        foreach (var c in formD)
+        {
+            // Why omitir (no espacio): "más" debe quedar "mas", no "ma s".
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+            {
+                sb.Append(c);
+            }
+        }
+
+        var spaced = new string(sb.ToString().Where(c => char.IsLetterOrDigit(c) || c == ' ').ToArray());
+        return string.Join(' ', spaced.Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 
     /// <inheritdoc/>

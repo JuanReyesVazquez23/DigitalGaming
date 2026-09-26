@@ -31,4 +31,9 @@ public sealed record CheckoutDto
     [Required]
     [MinLength(1, ErrorMessage = "El carrito está vacío.")]
     public IReadOnlyList<CheckoutItemDto> Items { get; init; } = [];
+
+    /// <summary>
+    /// Gets the shipping zone identifier.
+    /// </summary>
+    public string ZoneId { get; init; } = "santo-domingo";
 }

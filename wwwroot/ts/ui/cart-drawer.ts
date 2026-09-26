@@ -3,6 +3,7 @@ import { checkout, orderLinesFor } from "../data/order-repository.js";
 import { formatPrice, type Product } from "../domain/models.js";
 import { cartCount, clearCart, getCart, removeFromCart, setQty } from "../services/cart-store.js";
 import { getSession } from "../services/session-store.js";
+import { SHIPPING_ZONES, cartSubtotal, shippingCost, waOrderLink } from "../services/shipping.js";
 
 interface CartDeps {
   getCatalog: () => Product[];
@@ -27,6 +28,21 @@ export function setupCart(deps: CartDeps): {
   const errorEl = getEl("cartError");
   const badge = getEl("cartCount");
   const checkoutBtn = getEl("checkoutBtn") as HTMLButtonElement;
+  const subtotalEl = getEl("cartSubtotal");
+  const shippingEl = getEl("cartShipping");
+  const zoneSel = getEl("shipZone") as HTMLSelectElement;
+  const successEl = getEl("orderSuccess");
+  const successText = getEl("orderSuccessText");
+  const whatsBtn = getEl("orderWhatsBtn") as HTMLAnchorElement;
+
+  if (zoneSel.options.length === 0) {
+    for (const z of SHIPPING_ZONES) {
+      const o = document.createElement("option");
+      o.value = z.id;
+      o.textContent = `${z.label} — ${z.cost === 0 ? "Gratis" : formatPrice(z.cost)}`;
+      zoneSel.appendChild(o);
+    }
+  }
 
   function openCart(): void {
     renderCart();
@@ -58,10 +74,8 @@ export function setupCart(deps: CartDeps): {
     emptyEl.style.display = detailed.length === 0 ? "block" : "none";
     checkoutBtn.disabled = detailed.length === 0;
 
-    let total = 0;
     for (const { line, product } of detailed) {
       const p = product as Product;
-      total += p.price * line.qty;
       const row = document.createElement("div");
       row.className = "cart-item";
       row.innerHTML = `<img alt="" loading="lazy" /><div class="meta"><strong></strong><span></span><div class="qty"><button data-act="dec">−</button><b></b><button data-act="inc">+</button></div></div><button class="cart-remove">Quitar</button>`;
@@ -94,7 +108,11 @@ export function setupCart(deps: CartDeps): {
       });
       itemsEl.appendChild(row);
     }
-    totalEl.textContent = formatPrice(total);
+    const subtotal = cartSubtotal(detailed.map(({ line, product }) => ({ price: (product as Product).price, qty: line.qty })));
+    const ship = shippingCost(subtotal, zoneSel.value);
+    subtotalEl.textContent = formatPrice(subtotal);
+    shippingEl.textContent = ship === 0 ? (subtotal > 0 ? "Gratis" : formatPrice(0)) : formatPrice(ship);
+    totalEl.textContent = formatPrice(subtotal + ship);
   }
 
   async function doCheckout(): Promise<void> {
@@ -109,6 +127,7 @@ export function setupCart(deps: CartDeps): {
     // (caché vieja, otro reinicio), se quita con aviso en vez de fallar la compra.
     const lines = orderLinesFor(getCart(), deps.getCatalog());
     errorEl.textContent = "";
+    successEl.hidden = true;
     checkoutBtn.disabled = true;
     try {
       await deps.refreshCatalog();
@@ -127,11 +146,14 @@ export function setupCart(deps: CartDeps): {
         errorEl.textContent = "Tu carrito quedó vacío: esos productos ya no están disponibles.";
         return;
       }
-      const order = await checkout(valid);
+      const order = await checkout(valid, zoneSel.value);
+      const count = valid.reduce((n, l) => n + l.quantity, 0);
       clearCart();
       renderCart();
-      closeCart();
-      toast(`¡Compra lista, ${session.username}! Pedido #${order.id.slice(0, 8)} · Total ${formatPrice(order.total)}`);
+      successText.textContent = `Pedido #${order.id.slice(0, 8)} · Total ${formatPrice(order.total)}`;
+      whatsBtn.href = waOrderLink(order.id, order.total, count, session.username);
+      successEl.hidden = false;
+      toast(`¡Compra lista, ${session.username}!`);
       await deps.onCheckoutDone();
     } catch (e) {
       if (e instanceof Error && e.message === "NO_AUTH") {
@@ -145,9 +167,20 @@ export function setupCart(deps: CartDeps): {
     }
   }
 
+  function hideSuccess(): void {
+    successEl.hidden = true;
+  }
+
   getEl("cartBtn").addEventListener("click", openCart);
-  getEl("closeCartBtn").addEventListener("click", closeCart);
-  backdrop.addEventListener("click", closeCart);
+  getEl("closeCartBtn").addEventListener("click", () => {
+    hideSuccess();
+    closeCart();
+  });
+  backdrop.addEventListener("click", () => {
+    hideSuccess();
+    closeCart();
+  });
+  zoneSel.addEventListener("change", renderCart);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && drawer.classList.contains("open")) closeCart();
   });

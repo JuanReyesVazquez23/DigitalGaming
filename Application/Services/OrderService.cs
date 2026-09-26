@@ -7,7 +7,7 @@ namespace DigitalGaming.Application.Services;
 /// <summary>
 /// Implements checkout: validates stock, snapshots prices and discounts inventory.
 /// </summary>
-/// <remarks>Layer: Application.</remarks>
+/// <remarks>Layer: Application. Shipping zones mirror ts/services/shipping.ts.</remarks>
 /// <param name="orders">The order repository.</param>
 /// <param name="products">The product repository.</param>
 public sealed class OrderService(IOrderRepository orders, IProductRepository products) : IOrderService
@@ -15,8 +15,10 @@ public sealed class OrderService(IOrderRepository orders, IProductRepository pro
     private readonly IOrderRepository _orders = orders ?? throw new ArgumentNullException(nameof(orders));
     private readonly IProductRepository _products = products ?? throw new ArgumentNullException(nameof(products));
 
+    private const int FreeShippingOver = 20000;
+
     /// <inheritdoc/>
-    public async Task<Order> CheckoutAsync(Guid userId, string username, IReadOnlyList<CheckoutItemDto> items, CancellationToken cancellationToken = default)
+    public async Task<Order> CheckoutAsync(Guid userId, string username, IReadOnlyList<CheckoutItemDto> items, string? zoneId, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(items);
         if (userId == Guid.Empty)
@@ -57,8 +59,10 @@ public sealed class OrderService(IOrderRepository orders, IProductRepository pro
             lines.Add(new OrderItem(product.Id, product.Name, product.Price, quantity));
         }
 
-        var total = lines.Sum(l => l.UnitPrice * l.Quantity);
-        var order = new Order(Guid.NewGuid(), userId, username, lines, total, DateTime.UtcNow);
+        var subtotal = lines.Sum(l => l.UnitPrice * l.Quantity);
+        var zone = NormalizeZone(zoneId);
+        var shipping = subtotal >= FreeShippingOver ? 0 : ZoneCost(zone);
+        var order = new Order(Guid.NewGuid(), userId, username, lines, subtotal + shipping, DateTime.UtcNow, zone, shipping);
         await _orders.AddAsync(order, cancellationToken).ConfigureAwait(false);
 
         // Why después de crear el pedido: si falla el descuento, el pedido ya quedó registrado para conciliar.
@@ -84,4 +88,18 @@ public sealed class OrderService(IOrderRepository orders, IProductRepository pro
 
         return _orders.GetByUserAsync(userId, cancellationToken);
     }
+
+    private static string NormalizeZone(string? zoneId) => zoneId?.Trim().ToLowerInvariant() switch
+    {
+        "interior" => "interior",
+        "pickup" => "pickup",
+        _ => "santo-domingo",
+    };
+
+    private static decimal ZoneCost(string zone) => zone switch
+    {
+        "interior" => 450,
+        "pickup" => 0,
+        _ => 250,
+    };
 }

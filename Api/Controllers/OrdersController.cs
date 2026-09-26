@@ -43,7 +43,7 @@ public sealed class OrdersController(IOrderService orders) : ControllerBase
         var username = User.FindFirstValue(ClaimTypes.Name) ?? "cliente";
         try
         {
-            var order = await _orders.CheckoutAsync(userId.Value, username, dto.Items, ct).ConfigureAwait(false);
+            var order = await _orders.CheckoutAsync(userId.Value, username, dto.Items, dto.ZoneId, ct).ConfigureAwait(false);
             return CreatedAtAction(nameof(Mine), null, order);
         }
         catch (ArgumentException ex)

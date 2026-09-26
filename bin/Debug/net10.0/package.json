@@ -5,7 +5,8 @@
   "description": "DigitalGaming en Vercel: frontend estático + Functions Node + Neon Postgres",
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/vercel-build.mjs",
-    "build:web": "tsc -p tsconfig.json"
+    "build:web": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.api.json --noEmit"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.0",
@@ -14,6 +15,11 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@types/formidable": "^3.5.1",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.6.3",
+    "@types/pg": "^8.23.1",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
 }

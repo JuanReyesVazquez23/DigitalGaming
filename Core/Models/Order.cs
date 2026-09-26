@@ -68,9 +68,19 @@ public sealed record Order
     public IReadOnlyList<OrderItem> Items { get; init; } = [];
 
     /// <summary>
-    /// Gets the order total in RD$.
+    /// Gets the order total in RD$ (items + shipping).
     /// </summary>
     public decimal Total { get; init; }
+
+    /// <summary>
+    /// Gets the shipping zone identifier.
+    /// </summary>
+    public string ShippingZone { get; init; } = "santo-domingo";
+
+    /// <summary>
+    /// Gets the shipping cost in RD$.
+    /// </summary>
+    public decimal ShippingCost { get; init; }
 
     /// <summary>
     /// Gets the creation date in UTC.
@@ -86,13 +96,17 @@ public sealed record Order
     /// <param name="items">The purchased items.</param>
     /// <param name="total">The order total in RD$.</param>
     /// <param name="createdAtUtc">The creation date in UTC.</param>
-    public Order(Guid id, Guid userId, string username, IReadOnlyList<OrderItem> items, decimal total, DateTime createdAtUtc)
+    /// <param name="shippingZone">The shipping zone identifier.</param>
+    /// <param name="shippingCost">The shipping cost in RD$.</param>
+    public Order(Guid id, Guid userId, string username, IReadOnlyList<OrderItem> items, decimal total, DateTime createdAtUtc, string shippingZone = "santo-domingo", decimal shippingCost = 0)
     {
         Id = id;
         UserId = userId;
         Username = username;
         Items = items;
         Total = total;
+        ShippingZone = shippingZone;
+        ShippingCost = shippingCost;
         CreatedAtUtc = createdAtUtc;
     }
 }

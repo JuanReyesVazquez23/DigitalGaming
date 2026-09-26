@@ -1,6 +1,7 @@
 // Layer: ts/data — acceso a datos (API ASP.NET + respaldo localStorage).
 import type { CreateProductDto, PagedResult, Product } from "../domain/models.js";
 import { api } from "../services/api-config.js";
+import { matchesProduct } from "../services/product-service.js";
 import { authFetch } from "./auth-fetch.js";
 
 const API = api("/api/products");
@@ -79,17 +80,10 @@ export async function fetchPage(q: PageQuery): Promise<PagedResult<Product>> {
       offset: Number(data.offset ?? data.Offset ?? q.offset),
     };
   } catch {
-    // Fallback offline: misma forma paginando la caché local.
-    const query = (q.query ?? "").trim().toLowerCase();
-    const filtered = readLocal().filter((p) => {
-      const okCat = !q.category || q.category === "all" || String(p.category) === q.category;
-      const okHidden = q.includeHidden || !p.hidden;
-      const okQuery =
-        query === "" ||
-        p.name.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query);
-      return okCat && okHidden && okQuery;
-    });
+    // Fallback offline: misma forma paginando la caché local (misma búsqueda tolerante).
+    const filtered = readLocal().filter(
+      (p) => (q.includeHidden || !p.hidden) && matchesProduct(p, q.category ?? "all", q.query ?? "")
+    );
     return {
       items: filtered.slice(q.offset, q.offset + q.limit),
       total: filtered.length,

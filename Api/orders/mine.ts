@@ -13,7 +13,7 @@ const handler: Handler = async (req, res) => {
 
   const pool = getPool();
   const { rows: orders } = await pool.query(
-    `SELECT "Id","Total","CreatedAtUtc" FROM "Orders" WHERE "UserId"=$1 ORDER BY "CreatedAtUtc" DESC`,
+    `SELECT "Id","Total","ShippingZone","ShippingCost","CreatedAtUtc" FROM "Orders" WHERE "UserId"=$1 ORDER BY "CreatedAtUtc" DESC`,
     [user.id]
   );
   const out = [];
@@ -25,6 +25,8 @@ const handler: Handler = async (req, res) => {
     out.push({
       id: String(o.Id),
       total: Number(o.Total ?? 0),
+      shippingZone: String(o.ShippingZone ?? "santo-domingo"),
+      shippingCost: Number(o.ShippingCost ?? 0),
       createdAtUtc: o.CreatedAtUtc instanceof Date ? o.CreatedAtUtc.toISOString() : String(o.CreatedAtUtc ?? ""),
       items: items.map((i: DbRow) => ({
         productName: String(i.ProductName ?? ""),

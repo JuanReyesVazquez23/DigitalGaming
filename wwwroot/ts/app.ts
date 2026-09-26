@@ -7,6 +7,7 @@ import { setupAdmin } from "./ui/admin-controller.js";
 import { setupAuth } from "./ui/auth-controller.js";
 import { setupCart, toast } from "./ui/cart-drawer.js";
 import { setupCountdown } from "./ui/countdown.js";
+import { setupDetail } from "./ui/product-detail.js";
 import { setupOrders } from "./ui/orders-controller.js";
 import { setupTapUnlock } from "./ui/tap-unlock.js";
 import type { PagedResult, Product } from "./domain/models.js";
@@ -54,6 +55,24 @@ const cart = setupCart({
   requireAuth: (notice) => auth.openAuth("login", notice),
   onCartChanged: paint,
   refreshCatalog: reload,
+});
+
+const detail = setupDetail({
+  getCatalog: () => all,
+  onAdd: (id, qty) => {
+    const p = all.find((x) => x.id === id);
+    if (!p) return;
+    const inCart = getCart().find((l) => l.id === id)?.qty ?? 0;
+    const addable = Math.max(0, Math.min(qty, p.stock - inCart));
+    if (addable <= 0) {
+      toast(p.stock <= 0 ? "Agotado por ahora." : "Ya tienes el máximo en el carrito.");
+      return;
+    }
+    for (let i = 0; i < addable; i++) addToCart(id);
+    cart.renderCart();
+    paint();
+    toast(`Agregado: ${p.name} ×${addable} 🛒`);
+  },
 });
 
 setupOrders({
@@ -173,7 +192,8 @@ function paint(): void {
       const p = all.find((x) => x.id === id);
       toast(p ? `Agregado: ${p.name} 🛒` : "Agregado al carrito 🛒");
     },
-    (id) => reserved.get(id) ?? 0
+    (id) => reserved.get(id) ?? 0,
+    (id) => detail.openDetail(id)
   );
   if (statTotal) statTotal.textContent = String(all.length);
   count.textContent = pageResult.total === 1 ? "1 producto" : `${pageResult.total} productos`;
@@ -188,4 +208,10 @@ function el(id: string): HTMLElement {
   return node;
 }
 
-void reload();
+void reload().then(() => {
+  // Deep link: #/p/:id abre el detalle (sirve para compartir por WhatsApp).
+  try {
+    const m = /^#\/p\/(.+)$/.exec(window.location.hash);
+    if (m) detail.openDetail(decodeURIComponent(m[1]));
+  } catch { /* sin hash disponible */ }
+});
