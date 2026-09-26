@@ -22,7 +22,7 @@ Prices in **RD$** · Shipping across the country · GTA VI preorder with countdo
 - 🛒 Cart with **live stock**, shipping zones (SD / Interior / pickup) and checkout with login
 - 🔐 Auth with short JWT (15 min) + **rotating refresh tokens**, rate limiting and logout everywhere
 - 📦 Order history + **WhatsApp** confirmation
-- 🛠️ Hidden admin mode (10 taps on the title): create/edit/delete, hidden products, image upload to Storage
+- 🛠️ Hidden admin mode (10 taps on the title, requires the `ADMIN_USERNAME` account): create/edit/delete, hidden products, image upload to Storage, full order log with buyers
 - 🎬 **GTA VI** preorder banner with countdown to Nov 19, 2026
 
 ## 🧱 Stack
@@ -65,7 +65,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    V[Vercel<br/>frontend + api/*] -->|POSTGRES_URL<br/>JWT_KEY| N[(Neon Postgres)]
+    V[Vercel<br/>frontend + api/*] -->|POSTGRES_URL<br/>JWT_KEY<br/>ADMIN_USERNAME| N[(Neon Postgres)]
     U[User] --> V
 ```
 
@@ -100,7 +100,7 @@ dotnet run --project server-dotnet/DigitalGaming.csproj
 # → http://localhost:5127
 ```
 
-- Demo account: `admin` / `Admin1234` · Admin: 10 taps on the title.
+- Demo account: `admin` / `Admin1234` · Admin mode: 10 taps on the title **logged in as `ADMIN_USERNAME`**.
 - With `ConnectionStrings__DefaultConnection` it uses Postgres instead of memory.
 
 ## ☁️ Deploy (Vercel + Neon)
@@ -112,6 +112,7 @@ dotnet run --project server-dotnet/DigitalGaming.csproj
 |---|---|
 | `POSTGRES_URL` | Neon pooled string (`?sslmode=require`) |
 | `JWT_KEY` | 64+ char key (new, not the dev one) |
+| `ADMIN_USERNAME` | login name allowed into admin mode + admin APIs (default `admin`) |
 | `API_URL` | *(empty = same origin)* |
 | Blob | Storage tab → create a Blob store and connect it |
 
@@ -127,7 +128,8 @@ dotnet build server-dotnet/DigitalGaming.csproj
 
 ## 🗺️ Roadmap
 
-- [ ] Roles (real `admin` on writes)
+- [x] Admin gated by `ADMIN_USERNAME` (no password env vars — passwords stay hashed in DB)
+- [ ] Multiple admins / granular roles
 - [ ] Payments (Azul/CardNet) + order states
 - [ ] Tests in the repo (xUnit + Playwright)
 - [ ] Multi-image gallery, wishlist, coupons
