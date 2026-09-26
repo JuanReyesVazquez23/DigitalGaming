@@ -1,8 +1,9 @@
 // GET /api/orders/mine — historial del usuario logueado
 import { getPool } from "../_db.js";
 import { getAuthUser, send } from "../_auth.js";
+import type { DbRow, Handler } from "../_types.js";
 
-export default async function handler(req, res) {
+const handler: Handler = async (req, res) => {
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
     return send(res, 405, { message: "Método no permitido." });
@@ -19,18 +20,20 @@ export default async function handler(req, res) {
   for (const o of orders) {
     const { rows: items } = await pool.query(
       `SELECT "ProductName","UnitPrice","Quantity" FROM "OrderItems" WHERE "OrderId"=$1`,
-      [o.Id]
+      [String(o.Id)]
     );
     out.push({
-      id: o.Id,
-      total: Number(o.Total),
-      createdAtUtc: o.CreatedAtUtc instanceof Date ? o.CreatedAtUtc.toISOString() : String(o.CreatedAtUtc),
-      items: items.map((i) => ({
-        productName: i.ProductName,
-        quantity: i.Quantity,
-        unitPrice: Number(i.UnitPrice),
+      id: String(o.Id),
+      total: Number(o.Total ?? 0),
+      createdAtUtc: o.CreatedAtUtc instanceof Date ? o.CreatedAtUtc.toISOString() : String(o.CreatedAtUtc ?? ""),
+      items: items.map((i: DbRow) => ({
+        productName: String(i.ProductName ?? ""),
+        quantity: Number(i.Quantity ?? 0),
+        unitPrice: Number(i.UnitPrice ?? 0),
       })),
     });
   }
   return send(res, 200, out);
-}
+};
+
+export default handler;

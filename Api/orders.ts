@@ -3,8 +3,16 @@
 import crypto from "node:crypto";
 import { getPool } from "./_db.js";
 import { getAuthUser, send } from "./_auth.js";
+import type { DbRow, Handler } from "./_types.js";
 
-export default async function handler(req, res) {
+interface OrderLine {
+  productId: string;
+  productName: string;
+  unitPrice: number;
+  quantity: number;
+}
+
+const handler: Handler = async (req, res) => {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return send(res, 405, { message: "Método no permitido." });
@@ -12,15 +20,17 @@ export default async function handler(req, res) {
   const user = getAuthUser(req);
   if (!user) return send(res, 401, { message: "No autorizado." });
 
-  const items = req.body?.items ?? req.body?.Items ?? [];
+  const body = (req.body ?? {}) as Record<string, unknown>;
+  const items = (body.items ?? body.Items ?? []) as Array<Record<string, unknown>>;
   if (!Array.isArray(items) || items.length === 0) {
     return send(res, 400, { message: "El carrito está vacío." });
   }
   // Agrupa por producto antes de validar stock.
-  const grouped = new Map();
+  const grouped = new Map<string, number>();
   for (const it of items) {
-    const pid = String(it.productId ?? it.ProductId ?? "");
-    const q = Number(it.quantity ?? it.Quantity ?? 0);
+    const rec = it as Record<string, unknown>;
+    const pid = String(rec.productId ?? rec.ProductId ?? "");
+    const q = Number(rec.quantity ?? rec.Quantity ?? 0);
     if (!pid || !Number.isInteger(q) || q < 1 || q > 99) {
       return send(res, 400, { message: "Cantidad inválida para un producto." });
     }
@@ -31,22 +41,22 @@ export default async function handler(req, res) {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    const lines = [];
+    const lines: OrderLine[] = [];
     for (const [pid, qty] of grouped) {
       const { rows } = await client.query(
         `SELECT "Id","Name","Price","Stock" FROM "Products" WHERE "Id"=$1 FOR UPDATE`,
         [pid]
       );
-      const p = rows[0];
+      const p: DbRow | undefined = rows[0];
       if (!p) {
         await client.query("ROLLBACK");
         return send(res, 400, { message: "Un producto del carrito ya no existe." });
       }
-      if (p.Stock < qty) {
+      if (Number(p.Stock) < qty) {
         await client.query("ROLLBACK");
-        return send(res, 400, { message: `Sin stock suficiente de "${p.Name}" (quedan ${p.Stock}).` });
+        return send(res, 400, { message: `Sin stock suficiente de "${String(p.Name)}" (quedan ${Number(p.Stock)}).` });
       }
-      lines.push({ productId: p.Id, productName: p.Name, unitPrice: Number(p.Price), quantity: qty });
+      lines.push({ productId: String(p.Id), productName: String(p.Name), unitPrice: Number(p.Price), quantity: qty });
       await client.query(`UPDATE "Products" SET "Stock"="Stock"-$1 WHERE "Id"=$2`, [qty, pid]);
     }
     const total = lines.reduce((n, l) => n + l.unitPrice * l.quantity, 0);
@@ -65,9 +75,15 @@ export default async function handler(req, res) {
     await client.query("COMMIT");
     return send(res, 201, { id: orderId, total, items: lines });
   } catch (e) {
-    try { await client.query("ROLLBACK"); } catch { /* ya en error */ }
+    try {
+      await client.query("ROLLBACK");
+    } catch {
+      /* ya en error */
+    }
     throw e;
   } finally {
     client.release();
   }
-}
+};
+
+export default handler;

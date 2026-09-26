@@ -1,11 +1,12 @@
 // Capa compartida: pool Postgres (Neon pooled string) para las Functions.
 // Env var en Vercel: POSTGRES_URL = connection string pooled con ?sslmode=require
 import pg from "pg";
+import type { DbPool } from "./_types.js";
 
 const { Pool } = pg;
-let pool = null;
+let pool: DbPool | null = null;
 
-export function getPool() {
+export function getPool(): DbPool {
   if (pool) return pool;
   const cs =
     process.env.POSTGRES_URL ||
@@ -19,6 +20,6 @@ export function getPool() {
 }
 
 // Solo tests: inyecta un pool falso.
-export function __setPool(p) {
+export function __setPool(p: DbPool): void {
   pool = p;
 }
