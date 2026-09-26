@@ -9,6 +9,7 @@ using DigitalGaming.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +40,10 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
 // --- JWT settings (strongly-typed). En producción usa variable de entorno Jwt__Key. ---
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
+if (string.IsNullOrWhiteSpace(jwt.Key) || jwt.Key.Length < 32)
+{
+    throw new InvalidOperationException("Falta configurar Jwt:Key (mínimo 32 caracteres). Revisa appsettings.json o la env Jwt__Key.");
+}
 
 // --- Datos: Postgres (Supabase) si hay connection string; si no, InMemory (dev local). ---
 // Env var: ConnectionStrings__DefaultConnection = pooler de Supabase (puerto 6543) o directa (5432).
@@ -110,8 +115,28 @@ if (usePostgres)
     await DbSeeder.SeedAsync(db);
 }
 
-app.UseDefaultFiles(); // sirve wwwroot/index.html
-app.UseStaticFiles();
+// --- Frontend compartido: vive en la raíz del repo (también lo usa Vercel). ---
+// Why se busca hacia arriba desde la DLL: ContentRoot con `dotnet ruta.dll`
+// es el CWD, no la carpeta del proyecto.
+static string FindWwwRoot()
+{
+    var dir = new DirectoryInfo(AppContext.BaseDirectory);
+    for (var i = 0; i < 8 && dir is not null; i++, dir = dir.Parent)
+    {
+        var candidate = Path.Combine(dir.FullName, "wwwroot", "index.html");
+        if (File.Exists(candidate))
+        {
+            return Path.GetDirectoryName(candidate)!;
+        }
+    }
+
+    throw new DirectoryNotFoundException($"No se encontró wwwroot/index.html hacia arriba de {AppContext.BaseDirectory}");
+}
+
+var wwwroot = new PhysicalFileProvider(FindWwwRoot());
+var wwwrootFiles = new StaticFileOptions { FileProvider = wwwroot, RequestPath = "" };
+app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = wwwroot, RequestPath = "" });
+app.UseStaticFiles(wwwrootFiles);
 
 app.UseCors();
 
@@ -123,6 +148,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Fallback SPA: cualquier ruta no-API devuelve index.html
-app.MapFallbackToFile("index.html");
+app.MapFallbackToFile("index.html", wwwrootFiles);
 
 app.Run();
