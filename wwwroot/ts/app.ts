@@ -35,6 +35,7 @@ let showHidden = false;
 // Paginación por desplazamiento (el CDN cachea cada ventana).
 const PAGE_SIZE = 8;
 let page = 1;
+let searchTimer: number | undefined;
 let pageResult: PagedResult<Product> = { items: [], total: 0, limit: PAGE_SIZE, offset: 0 };
 
 const auth = setupAuth({
@@ -136,7 +137,9 @@ filters.addEventListener("click", (e) => {
 search.addEventListener("input", () => {
   showHidden = false;
   page = 1;
-  void loadPage();
+  // Why debounce: cada tecla era un request al API.
+  window.clearTimeout(searchTimer);
+  searchTimer = window.setTimeout(() => void loadPage(), 300);
 });
 
 // Anuncio GTA VI: Reservar aparta el juego directo al carrito.
@@ -243,7 +246,7 @@ function paint(): void {
     (id) => reserved.get(id) ?? 0,
     (id) => detail.openDetail(id)
   );
-  if (statTotal) statTotal.textContent = String(all.length);
+  if (statTotal) statTotal.textContent = String(all.filter((p) => !p.hidden).length);
   count.textContent = pageResult.total === 1 ? "1 producto" : `${pageResult.total} productos`;
   pageLabel.textContent = `Página ${page} de ${totalPages()}`;
   prevBtn.disabled = page <= 1;

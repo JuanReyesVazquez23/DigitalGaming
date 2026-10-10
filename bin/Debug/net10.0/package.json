@@ -2,10 +2,10 @@
   "name": "digitalgaming",
   "private": true,
   "type": "module",
-  "description": "DigitalGaming en Vercel: frontend estático + Functions Node + Neon Postgres",
+  "description": "DigitalGaming en Vercel: frontend est\u00e1tico + Functions Node + Neon Postgres",
   "scripts": {
-    "build": "tsc -p tsconfig.json && node scripts/vercel-build.mjs",
-    "build:web": "tsc -p tsconfig.json",
+    "build": "node init && tsc -p tsconfig.json && node scripts/vercel-build.mjs",
+    "build:web": "node init && tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.api.json --noEmit"
   },
   "dependencies": {

@@ -63,6 +63,8 @@ export function setupCart(deps: CartDeps): {
 
   function renderCart(): void {
     updateBadge();
+    // Why: el éxito de compra es transitorio; cualquier re-render lo oculta.
+    successEl.hidden = true;
     const catalog = deps.getCatalog();
     const cart = getCart();
     const detailed = cart

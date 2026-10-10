@@ -2,16 +2,19 @@
   "name": "digitalgaming",
   "private": true,
   "type": "module",
-  "description": "DigitalGaming en Vercel: frontend estático + Functions Node + Neon Postgres",
+  "description": "DigitalGaming en Vercel: frontend est\u00e1tico + Functions Node + Neon Postgres",
   "scripts": {
-    "build": "tsc -p tsconfig.json && node scripts/vercel-build.mjs",
-    "build:web": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.api.json --noEmit"
+    "build": "node init && tsc -p tsconfig.json && node scripts/vercel-build.mjs",
+    "build:web": "node init && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.api.json --noEmit",
+    "test": "npm run build:web && node --import tsx/esm tests/api.test.mjs && node --import tsx/esm tests/methods.test.mjs && node tests/detail.test.mjs && node tests/orders-ui.test.mjs && node tests/app.test.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.0",
+    "dotenv": "^8.2.0",
     "formidable": "^3.5.4",
     "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^3.3.2",
     "pg": "^8.13.1"
   },
   "devDependencies": {
