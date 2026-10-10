@@ -69,6 +69,8 @@ export async function adminStatus(): Promise<{ username: string; isAdmin: boolea
   if (!s) throw new Error("NO_AUTH");
   const res = await fetch(`${API}/admin-status`, {
     headers: { Authorization: `Bearer ${s.accessToken}` },
+    // Why: sin timeout el "Verificando…" se quedaría colgado con red mala.
+    signal: AbortSignal.timeout(8000),
   });
   if (res.status === 401) throw new Error("NO_AUTH");
   if (!res.ok) throw new Error("No se pudo verificar.");
